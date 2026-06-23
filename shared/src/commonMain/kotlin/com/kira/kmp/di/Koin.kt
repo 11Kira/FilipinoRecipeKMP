@@ -14,7 +14,13 @@ import com.kira.kmp.data.repository.UserRepository
 import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.domain.usecase.RecipeUseCase
 import com.kira.kmp.domain.usecase.UserUseCase
+import com.kira.kmp.features.account.auth.login.LoginViewModel
+import com.kira.kmp.features.account.auth.register.RegisterViewModel
+import com.kira.kmp.features.account.profile.ProfileViewModel
+import com.kira.kmp.features.recipes.details.RecipeDetailsViewModel
+import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListViewModel
 import com.kira.kmp.features.recipes.list.RecipeListViewModel
+import com.kira.kmp.features.splash.SplashViewModel
 import com.kira.kmp.ui.MainViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
@@ -46,7 +52,13 @@ val useCaseModule = module {
 
 val viewModelModule = module {
     factoryOf(::MainViewModel)
+    factoryOf(::SplashViewModel)
+    factoryOf(::LoginViewModel)
+    factoryOf(::RegisterViewModel)
     factoryOf(::RecipeListViewModel)
+    factoryOf(::RecipeDetailsViewModel)
+    factoryOf(::FavoriteRecipeListViewModel)
+    factoryOf(::ProfileViewModel)
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
