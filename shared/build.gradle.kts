@@ -58,6 +58,10 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.paging.common)
             implementation(libs.androidx.paging.compose)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
+            implementation(libs.jetbrains.navigation)
+            implementation(libs.multiplatform.settings)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
