@@ -1,0 +1,48 @@
+package com.kira.kmp.di
+
+import com.kira.kmp.data.remote.AuthService
+import com.kira.kmp.data.remote.RecipeService
+import com.kira.kmp.data.remote.UserService
+import com.kira.kmp.data.remote.createHttpClient
+import com.kira.kmp.data.remote.source.AuthRemoteSource
+import com.kira.kmp.data.remote.source.RecipeRemoteSource
+import com.kira.kmp.data.remote.source.UserRemoteSource
+import com.kira.kmp.data.repository.AuthRepository
+import com.kira.kmp.data.repository.RecipeRepository
+import com.kira.kmp.data.repository.UserRepository
+import com.kira.kmp.domain.usecase.AuthUseCase
+import com.kira.kmp.domain.usecase.RecipeUseCase
+import com.kira.kmp.domain.usecase.UserUseCase
+import org.koin.core.context.startKoin
+import org.koin.dsl.KoinAppDeclaration
+import org.koin.dsl.module
+
+val dataModule = module {
+    single { createHttpClient() }
+    single { AuthService(get()) }
+    single { RecipeService(get()) }
+    single { UserService(get()) }
+
+    single { AuthRemoteSource(get()) }
+    single { RecipeRemoteSource(get()) }
+    single { UserRemoteSource(get()) }
+
+    single { AuthRepository(get()) }
+    single { RecipeRepository(get()) }
+    single { UserRepository(get()) }
+}
+
+val useCaseModule = module {
+    factory { AuthUseCase(get()) }
+    factory { RecipeUseCase(get()) }
+    factory { UserUseCase(get()) }
+}
+
+fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
+    startKoin {
+        appDeclaration()
+        modules(dataModule, useCaseModule)
+    }
+
+// called by iOS
+fun initKoin() = initKoin {}
