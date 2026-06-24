@@ -29,7 +29,9 @@ class RecipeServiceTest {
                         "paging": {
                             "page": 1,
                             "size": 10,
-                            "total": 0
+                            "totalPages": 1,
+                            "totalElements": 0,
+                            "hasNext": false
                         }
                     }
                 """.trimIndent(),

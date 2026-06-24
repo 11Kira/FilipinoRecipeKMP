@@ -28,7 +28,7 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { createHttpClient() }
+    single { createHttpClient(get()) }
     single { AuthService(get()) }
     single { RecipeService(get()) }
     single { UserService(get()) }

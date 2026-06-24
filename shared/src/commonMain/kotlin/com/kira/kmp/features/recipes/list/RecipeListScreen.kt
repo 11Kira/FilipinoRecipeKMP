@@ -74,6 +74,14 @@ fun RecipeListScreen(
         confirmValueChange = { newValue -> newValue != SheetValue.Hidden })
     val recipes = viewModel.recipePagingFlow.collectAsLazyPagingItems()
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(recipes.loadState) {
+        val refresh = recipes.loadState.refresh
+        if (refresh is LoadState.Error) {
+            println("RecipeListScreen Error: ${refresh.error.message}")
+            onShowSnackbar("Error: ${refresh.error.message}")
+        }
+    }
     val query by viewModel.searchQuery.collectAsState()
     var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
     val selectedProteins by viewModel.selectedProteins.collectAsState()

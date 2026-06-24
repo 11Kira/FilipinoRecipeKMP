@@ -48,6 +48,15 @@ fun FavoriteRecipeListScreen(
     onShowSnackbar: (String) -> Unit
 ) {
     val recipes = viewModel.favoritePagingFlow.collectAsLazyPagingItems()
+
+    LaunchedEffect(recipes.loadState) {
+        val refresh = recipes.loadState.refresh
+        if (refresh is LoadState.Error) {
+            println("FavoriteRecipeListScreen Error: ${refresh.error.message}")
+            onShowSnackbar("Error: ${refresh.error.message}")
+        }
+    }
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->

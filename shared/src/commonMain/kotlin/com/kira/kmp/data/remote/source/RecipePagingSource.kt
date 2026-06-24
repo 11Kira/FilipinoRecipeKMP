@@ -20,16 +20,11 @@ class RecipePagingSource(
                 page = position
             )
             val recipes = response.data ?: emptyList()
-            val nextKey = if (recipes.isEmpty() || response.paging?.next == null) {
-                null
-            } else {
-                position + 1
-            }
 
             LoadResult.Page(
                 data = recipes,
                 prevKey = if (position == 1) null else position - 1,
-                nextKey = nextKey
+                nextKey = if (response.paging?.hasNext == true) position + 1 else null
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -37,6 +32,9 @@ class RecipePagingSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, Recipe>): Int? {
-        return state.anchorPosition
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
     }
 }

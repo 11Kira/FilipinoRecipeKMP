@@ -31,11 +31,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import com.kira.kmp.model.User
 import com.kira.kmp.utils.ColorUtils
 import filipinorecipekmp.shared.generated.resources.Res
 import filipinorecipekmp.shared.generated.resources.ic_account
+import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -103,12 +103,13 @@ fun PopulateProfileScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .align(Alignment.Center)
         ) {
-            AsyncImage(
-                model = Res.drawable.ic_account,
+            Icon(
+                imageVector = vectorResource(Res.drawable.ic_account),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp),
+                tint = Color.Black
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -125,7 +126,7 @@ fun PopulateProfileScreen(
                             .background(Color.White, RoundedCornerShape(24.dp))
                             .border(
                                 1.dp,
-                                Color.LightGray.copy(alpha = 0.3f),
+                                Color.Gray.copy(alpha = 0.5f),
                                 RoundedCornerShape(24.dp)
                             )
                             .padding(horizontal = 16.dp),
@@ -134,7 +135,7 @@ fun PopulateProfileScreen(
                         Icon(
                             imageVector = Icons.Filled.Person,
                             contentDescription = null,
-                            tint = Color.LightGray,
+                            tint = Color.Gray,
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -160,7 +161,7 @@ fun PopulateProfileScreen(
                             .background(Color.White, RoundedCornerShape(24.dp))
                             .border(
                                 1.dp,
-                                Color.LightGray.copy(alpha = 0.3f),
+                                Color.Gray.copy(alpha = 0.5f),
                                 RoundedCornerShape(24.dp)
                             )
                             .padding(horizontal = 16.dp),
@@ -169,7 +170,7 @@ fun PopulateProfileScreen(
                         Icon(
                             imageVector = Icons.Filled.Email,
                             contentDescription = null,
-                            tint = Color.LightGray,
+                            tint = Color.Gray,
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))

@@ -9,10 +9,10 @@ data class PagingResponse(
     val page: Int,
     @SerialName("size")
     val size: Int,
-    @SerialName("total")
-    val total: Int,
-    @SerialName("next")
-    val next: String? = "",
-    @SerialName("previous")
-    val previous: String? = "",
+    @SerialName("totalPages")
+    val totalPages: Int,
+    @SerialName("totalElements")
+    val totalElements: Long,
+    @SerialName("hasNext")
+    val hasNext: Boolean,
 )
