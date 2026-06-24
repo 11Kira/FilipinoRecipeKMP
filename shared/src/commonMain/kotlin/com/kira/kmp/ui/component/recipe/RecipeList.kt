@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,12 +26,9 @@ fun RecipeList(
     onItemClick: (String) -> Unit
 ) {
     val refreshState = recipes.loadState.refresh
+    val shimmerBrush = RecipeShimmerBrush()
     
     Box(modifier = Modifier.fillMaxSize()) {
-        if (refreshState is LoadState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-
         if (refreshState is LoadState.Error) {
             Text(
                 text = "Error: ${refreshState.error.message}",
@@ -51,20 +47,26 @@ fun RecipeList(
             ),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            items(
-                count = recipes.itemCount,
-                key = { index ->
+            if (refreshState is LoadState.Loading) {
+                items(5) {
+                    RecipeShimmerItem(shimmerBrush = shimmerBrush)
+                }
+            } else {
+                items(
+                    count = recipes.itemCount,
+                    key = { index ->
+                        val recipe = recipes[index]
+                        "${recipe?.id}_$searchQuery"
+                    },
+                    contentType = recipes.itemContentType { "recipe_item" }
+                ) { index ->
                     val recipe = recipes[index]
-                    "${recipe?.id}_$searchQuery"
-                },
-                contentType = recipes.itemContentType { "recipe_item" }
-            ) { index ->
-                val recipe = recipes[index]
-                recipe?.let { selectedRecipe ->
-                    RecipeCardItem(
-                        selectedRecipe = selectedRecipe,
-                        onItemClick = onItemClick,
-                    )
+                    recipe?.let { selectedRecipe ->
+                        RecipeCardItem(
+                            selectedRecipe = selectedRecipe,
+                            onItemClick = onItemClick,
+                        )
+                    }
                 }
             }
         }
