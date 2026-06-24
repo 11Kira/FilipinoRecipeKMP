@@ -1,7 +1,7 @@
 package com.kira.kmp.di
 
-import com.russhwolf.multiplatform.settings.Settings
-import com.russhwolf.multiplatform.settings.SharedPreferencesSettings
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

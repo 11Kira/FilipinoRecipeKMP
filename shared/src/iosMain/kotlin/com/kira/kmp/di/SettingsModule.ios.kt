@@ -1,7 +1,7 @@
 package com.kira.kmp.di
 
-import com.russhwolf.multiplatform.settings.NSUserDefaultsSettings
-import com.russhwolf.multiplatform.settings.Settings
+import com.russhwolf.settings.NSUserDefaultsSettings
+import com.russhwolf.settings.Settings
 import org.koin.dsl.module
 import platform.Foundation.NSUserDefaults
 

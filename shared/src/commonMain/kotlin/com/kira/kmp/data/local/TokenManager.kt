@@ -1,6 +1,7 @@
 package com.kira.kmp.data.local
 
-import com.russhwolf.multiplatform.settings.Settings
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.set
 
 class TokenManager(private val settings: Settings) {
 
