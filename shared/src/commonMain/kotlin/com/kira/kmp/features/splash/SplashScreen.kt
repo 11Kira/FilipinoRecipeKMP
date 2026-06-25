@@ -11,13 +11,14 @@ import com.kira.kmp.ui.navigation.RecipeListRoute
 import com.kira.kmp.ui.navigation.SplashRoute
 import com.kira.kmp.utils.ColorUtils
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SplashScreen(
     navController: NavController
 ) {
     LaunchedEffect(Unit) {
-        delay(1500)
+        delay(1500.milliseconds)
         navController.navigate(RecipeListRoute) {
             popUpTo(SplashRoute) { inclusive = true }
         }
