@@ -7,6 +7,7 @@ import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.domain.usecase.UserUseCase
 import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.model.request.LogoutRequest
+import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val authUseCase: AuthUseCase,
     private val userUseCase: UserUseCase,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
     private val _profileUiState = MutableStateFlow(ProfileUiState())
@@ -35,7 +37,8 @@ class ProfileViewModel(
                     }
                 }
             } catch (e: Exception) {
-                _profileUiState.update { it.copy(error = e.message, isLoading = false) }
+                val errorMessage = networkUtils.parseNetworkError(e)
+                _profileUiState.update { it.copy(error = errorMessage, isLoading = false) }
             }
         }
     }

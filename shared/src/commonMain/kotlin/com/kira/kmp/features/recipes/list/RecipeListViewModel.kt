@@ -6,6 +6,7 @@ import androidx.paging.cachedIn
 import com.kira.kmp.domain.usecase.RecipeUseCase
 import com.kira.kmp.domain.usecase.UserUseCase
 import com.kira.kmp.model.enums.ResponseStatus
+import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,8 @@ import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val recipeUseCase: RecipeUseCase,
-    private val userUseCase: UserUseCase
+    private val userUseCase: UserUseCase,
+    private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
     private val _recipeListUiState = MutableStateFlow(RecipeListState())
@@ -122,6 +124,15 @@ class RecipeListViewModel(
     }
 
     private fun rollbackListFavorite(recipeId: String, wasFavorited: Boolean) {
-        // Rollback logic
+        val currentList = _recipeListUiState.value.recipes ?: return
+        val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
+        if (recipeIndex == -1) return
+
+        _recipeListUiState.update { state ->
+            val updatedList = currentList.toMutableList().apply {
+                this[recipeIndex] = this[recipeIndex].copy(isFavorited = wasFavorited)
+            }
+            state.copy(recipes = updatedList)
+        }
     }
 }
