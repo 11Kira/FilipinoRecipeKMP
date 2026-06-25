@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.model.request.RegisterRequest
+import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val authUseCase: AuthUseCase
+    private val authUseCase: AuthUseCase,
+    private val networkUtils: NetworkUtils
 ) : ViewModel() {
     private val _registerState: MutableSharedFlow<RegisterState> = MutableSharedFlow()
     val registerState
@@ -44,7 +46,8 @@ class RegisterViewModel(
                 authUseCase.register(RegisterRequest(email, password, username))
                 _registerState.emit(RegisterState.OnRegister)
             } catch (e: Exception) {
-                _registerState.emit(RegisterState.ShowError(e))
+                val errorMessage = networkUtils.parseNetworkError(e)
+                _registerState.emit(RegisterState.ShowError(Exception(errorMessage)))
             } finally {
                 _isLoading.value = false
             }

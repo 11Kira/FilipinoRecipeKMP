@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,8 +57,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun RecipeDetailsScreen(
     id: String,
-    onShowSnackbar: (String) -> Unit,
+    onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
     onBackClick: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: RecipeDetailsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.recipeDetailsUiState.collectAsStateWithLifecycle()
@@ -68,7 +70,7 @@ fun RecipeDetailsScreen(
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
-            onShowSnackbar(it)
+            onShowSnackbar(it, null, null)
         }
     }
 
@@ -77,7 +79,9 @@ fun RecipeDetailsScreen(
             PopulateRecipeDetails(
                 viewModel = viewModel,
                 recipe = recipe,
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                onShowSnackbar = onShowSnackbar,
+                onNavigateToLogin = onNavigateToLogin
             )
         }
 
@@ -91,7 +95,9 @@ fun RecipeDetailsScreen(
 fun PopulateRecipeDetails(
     viewModel: RecipeDetailsViewModel,
     recipe: Recipe,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val headerHeight = 500.dp
@@ -130,7 +136,9 @@ fun PopulateRecipeDetails(
             viewModel = viewModel,
             alpha = toolbarAlpha,
             recipe = recipe,
-            onBackClick = onBackClick
+            onBackClick = onBackClick,
+            onShowSnackbar = onShowSnackbar,
+            onNavigateToLogin = onNavigateToLogin
         )
     }
 }
@@ -202,8 +210,11 @@ fun RecipeTopBar(
     viewModel: RecipeDetailsViewModel,
     alpha: Float,
     recipe: Recipe,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -237,7 +248,17 @@ fun RecipeTopBar(
             CircularIconButton(
                 icon = vectorResource(if (recipe.isFavorited) Res.drawable.ic_favorite_filled else Res.drawable.ic_favorite),
                 tint = if (recipe.isFavorited) Color.Red else Color.White,
-                onClick = { viewModel.toggleFavoriteRecipe(recipe.id) },
+                onClick = {
+                    if (isLoggedIn) {
+                        viewModel.toggleFavoriteRecipe(recipe.id)
+                    } else {
+                        onShowSnackbar(
+                            "Sign in to favorite this recipe",
+                            "Sign In",
+                            onNavigateToLogin
+                        )
+                    }
+                },
                 isFlipped = true
             )
         }

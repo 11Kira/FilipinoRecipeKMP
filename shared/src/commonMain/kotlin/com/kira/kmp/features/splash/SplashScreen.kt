@@ -7,31 +7,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.RecipeListRoute
 import com.kira.kmp.ui.navigation.SplashRoute
 import com.kira.kmp.utils.ColorUtils
-import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SplashScreen(
-    navController: NavController,
-    viewModel: SplashViewModel = koinViewModel()
+    navController: NavController
 ) {
     LaunchedEffect(Unit) {
-        viewModel.checkAuthStatus()
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.startDestination.collect { state ->
-            val route = when (state) {
-                is StartDestination.Home -> RecipeListRoute
-                is StartDestination.Login -> LoginRoute
-            }
-
-            navController.navigate(route) {
-                popUpTo(SplashRoute) { inclusive = true }
-            }
+        delay(1500.milliseconds)
+        navController.navigate(RecipeListRoute) {
+            popUpTo(SplashRoute) { inclusive = true }
         }
     }
 

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.kira.kmp.data.local.TokenManager
 import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.model.request.LoginRequest
+import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authUseCase: AuthUseCase,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
     private val _loginState: MutableSharedFlow<LoginState> = MutableSharedFlow()
@@ -57,7 +59,8 @@ class LoginViewModel(
                     _loginState.emit(LoginState.ShowError(Exception("Invalid response from server")))
                 }
             } catch (e: Exception) {
-                _loginState.emit(LoginState.ShowError(e))
+                val errorMessage = networkUtils.parseNetworkError(e)
+                _loginState.emit(LoginState.ShowError(Exception(errorMessage)))
             } finally {
                 _isLoading.value = false
             }

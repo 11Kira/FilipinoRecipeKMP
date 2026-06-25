@@ -20,8 +20,8 @@ import com.kira.kmp.features.account.profile.ProfileViewModel
 import com.kira.kmp.features.recipes.details.RecipeDetailsViewModel
 import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListViewModel
 import com.kira.kmp.features.recipes.list.RecipeListViewModel
-import com.kira.kmp.features.splash.SplashViewModel
 import com.kira.kmp.ui.MainViewModel
+import com.kira.kmp.utils.NetworkUtils
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.KoinAppDeclaration
@@ -42,6 +42,7 @@ val dataModule = module {
     single { UserRepository(get()) }
 
     single { TokenManager(get()) }
+    single { NetworkUtils() }
 }
 
 val useCaseModule = module {
@@ -52,7 +53,6 @@ val useCaseModule = module {
 
 val viewModelModule = module {
     factoryOf(::MainViewModel)
-    factoryOf(::SplashViewModel)
     factoryOf(::LoginViewModel)
     factoryOf(::RegisterViewModel)
     factoryOf(::RecipeListViewModel)

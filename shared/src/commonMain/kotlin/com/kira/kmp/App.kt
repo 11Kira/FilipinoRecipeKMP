@@ -13,8 +13,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +36,9 @@ import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.ui.navigation.AppNavHost
 import com.kira.kmp.ui.navigation.BottomMenuItem
 import com.kira.kmp.ui.navigation.DetailScreenNavigation
+import com.kira.kmp.ui.navigation.FavoritesRoute
 import com.kira.kmp.ui.navigation.LoginRoute
+import com.kira.kmp.ui.navigation.ProfileRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
 import com.kira.kmp.ui.navigation.SplashRoute
 import com.kira.kmp.ui.theme.FilipinoRecipeTheme
@@ -71,16 +75,25 @@ fun MainScreenView(viewModel: MainViewModel) {
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
-                BottomNavigation(navController = navController, viewModel = viewModel)
+                BottomNavigation(
+                    navController = navController,
+                    viewModel = viewModel,
+                    snackbarHostState = snackbarHostState
+                )
             }
         },
     ) { contentPadding ->
         AppNavHost(
             navController = navController,
             contentPadding = contentPadding,
-            onShowSnackbar = { message ->
+            onShowSnackbar = { message, actionLabel, action ->
                 scope.launch {
-                    snackbarHostState.showSnackbar(message)
+                    val result = snackbarHostState.showSnackbar(
+                        message = message,
+                        actionLabel = actionLabel,
+                        duration = SnackbarDuration.Short
+                    )
+                    if (result == SnackbarResult.ActionPerformed) action?.invoke()
                 }
             }
         )
@@ -88,7 +101,12 @@ fun MainScreenView(viewModel: MainViewModel) {
 }
 
 @Composable
-fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
+fun BottomNavigation(
+    navController: NavController,
+    viewModel: MainViewModel,
+    snackbarHostState: SnackbarHostState
+) {
+    val scope = rememberCoroutineScope()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val screens = listOf(
@@ -109,7 +127,25 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    if (!isSelected) {
+                    val restrictedRoutes = listOf(
+                        FavoritesRoute::class,
+                        ProfileRoute::class
+                    )
+                    val isRestricted = restrictedRoutes.any { it == bottomMenuItem.route::class }
+                    val isLoggedIn = viewModel.isLoggedIn()
+                    if (isRestricted && !isLoggedIn) {
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Sign in to access this feature",
+                                actionLabel = "Sign In",
+                                duration = SnackbarDuration.Short
+                            )
+
+                            if (result == SnackbarResult.ActionPerformed) {
+                                navController.navigate(LoginRoute)
+                            }
+                        }
+                    } else if (!isSelected) {
                         navController.navigate(bottomMenuItem.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
