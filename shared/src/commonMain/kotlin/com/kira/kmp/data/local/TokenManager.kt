@@ -23,6 +23,10 @@ class TokenManager(private val settings: Settings) {
         return settings.getStringOrNull(KEY_REFRESH_TOKEN)
     }
 
+    fun isLoggedIn(): Boolean {
+        return getAccessToken() != null
+    }
+
     fun clearTokens() {
         settings.clear()
     }

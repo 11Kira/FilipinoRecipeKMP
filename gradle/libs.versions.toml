@@ -21,6 +21,7 @@ androidx-paging = "3.5.0"
 coil3 = "3.5.0"
 jetbrainsNavigation = "2.9.2"
 multiplatformSettings = "1.3.0"
+securityCrypto = "1.1.0"
 androidx-compose-material-icons = "1.7.3"
 
 [libraries]
@@ -62,6 +63,7 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
 jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrainsNavigation" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 
 [plugins]

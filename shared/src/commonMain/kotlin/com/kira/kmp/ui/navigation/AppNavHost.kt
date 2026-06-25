@@ -18,7 +18,7 @@ import com.kira.kmp.features.splash.SplashScreen
 fun AppNavHost(
     navController: NavHostController,
     contentPadding: PaddingValues,
-    onShowSnackbar: (String) -> Unit
+    onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -28,13 +28,13 @@ fun AppNavHost(
         composable<LoginRoute> {
             LoginScreen(
                 navController = navController,
-                onShowSnackbar = onShowSnackbar
+                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
         }
         composable<RegisterRoute> {
             RegisterScreen(
                 navController = navController,
-                onShowSnackbar = onShowSnackbar
+                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
         }
         composable<RecipeListRoute> {
@@ -43,7 +43,7 @@ fun AppNavHost(
                 onItemClick = { id ->
                     navController.navigate(DetailScreenNavigation(id))
                 },
-                onShowSnackbar = onShowSnackbar
+                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
         }
 
@@ -53,13 +53,13 @@ fun AppNavHost(
                 onItemClick = { id ->
                     navController.navigate(DetailScreenNavigation(id))
                 },
-                onShowSnackbar = onShowSnackbar
+                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
         }
 
         composable<ProfileRoute> {
             ProfileScreen(
-                onShowSnackbar = onShowSnackbar,
+                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
                 onLogoutNavigate = {
                     navController.navigate(LoginRoute) {
                         popUpTo(0) { inclusive = true }
@@ -76,6 +76,9 @@ fun AppNavHost(
                 onShowSnackbar = onShowSnackbar,
                 onBackClick = {
                     navController.navigateUp()
+                },
+                onNavigateToLogin = {
+                    navController.navigate(LoginRoute)
                 }
             )
         }
