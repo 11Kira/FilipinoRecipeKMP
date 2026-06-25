@@ -3,6 +3,7 @@ package com.kira.kmp.features.account.auth.register
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
@@ -43,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +56,9 @@ import androidx.navigation.NavController
 import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
 import com.kira.kmp.utils.ColorUtils
+import filipinorecipekmp.shared.generated.resources.Res
+import filipinorecipekmp.shared.generated.resources.logo
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -134,6 +140,13 @@ fun PopulateRegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Image(
+                painter = painterResource(Res.drawable.logo),
+                contentDescription = "Project drawable image",
+                modifier = Modifier
+                    .size(350.dp),
+                contentScale = ContentScale.Crop
+            )
             BasicTextField(
                 value = username,
                 onValueChange = { username = it },

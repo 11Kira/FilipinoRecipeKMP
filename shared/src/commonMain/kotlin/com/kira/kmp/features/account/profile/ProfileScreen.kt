@@ -1,7 +1,9 @@
 package com.kira.kmp.features.account.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -29,13 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kira.kmp.model.User
 import com.kira.kmp.utils.ColorUtils
 import filipinorecipekmp.shared.generated.resources.Res
-import filipinorecipekmp.shared.generated.resources.ic_account
-import org.jetbrains.compose.resources.vectorResource
+import filipinorecipekmp.shared.generated.resources.logo
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -99,17 +102,16 @@ fun PopulateProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .align(Alignment.Center)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = vectorResource(Res.drawable.ic_account),
-                contentDescription = "Profile",
+            Image(
+                painter = painterResource(Res.drawable.logo),
+                contentDescription = "Project drawable image",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                tint = Color.Black
+                    .size(350.dp),
+                contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.height(12.dp))

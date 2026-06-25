@@ -61,7 +61,7 @@ fun AppNavHost(
             ProfileScreen(
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
                 onLogoutNavigate = {
-                    navController.navigate(LoginRoute) {
+                    navController.navigate(SplashRoute) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }

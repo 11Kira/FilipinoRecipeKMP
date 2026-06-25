@@ -35,7 +35,7 @@ fun RoundedTextWithIcon(text: String, icon: ImageVector, backgroundColor: Long, 
             imageVector = icon,
             contentDescription = "Time",
             tint = Color(textColor),
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(14.dp).align(Alignment.CenterVertically)
         )
         Spacer(modifier = Modifier.width(3.dp))
         Text(
