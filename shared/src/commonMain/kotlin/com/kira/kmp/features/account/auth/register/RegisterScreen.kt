@@ -183,6 +183,11 @@ fun PopulateRegisterScreen(
                         Row(
                             modifier = Modifier
                                 .background(Color.White, RoundedCornerShape(24.dp))
+                                .border(
+                                    1.dp,
+                                    Color.Gray.copy(alpha = 0.5f),
+                                    RoundedCornerShape(24.dp)
+                                )
                                 .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -216,6 +221,11 @@ fun PopulateRegisterScreen(
                         Row(
                             modifier = Modifier
                                 .background(Color.White, RoundedCornerShape(24.dp))
+                                .border(
+                                    1.dp,
+                                    Color.Gray.copy(alpha = 0.5f),
+                                    RoundedCornerShape(24.dp)
+                                )
                                 .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -251,6 +261,11 @@ fun PopulateRegisterScreen(
                         Row(
                             modifier = Modifier
                                 .background(Color.White, RoundedCornerShape(24.dp))
+                                .border(
+                                    1.dp,
+                                    Color.Gray.copy(alpha = 0.5f),
+                                    RoundedCornerShape(24.dp)
+                                )
                                 .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -296,7 +311,7 @@ fun PopulateRegisterScreen(
                                 .background(Color.White, RoundedCornerShape(24.dp))
                                 .border(
                                     width = 1.dp,
-                                    color = if (passwordsMatch) Color.Transparent else Color.Red,
+                                    color = if (passwordsMatch) Color.Gray.copy(alpha = 0.5f) else Color.Red,
                                     shape = RoundedCornerShape(24.dp)
                                 )
                                 .padding(horizontal = 16.dp),

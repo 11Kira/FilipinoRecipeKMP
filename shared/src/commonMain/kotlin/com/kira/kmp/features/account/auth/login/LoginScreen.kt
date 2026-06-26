@@ -173,7 +173,7 @@ fun PopulateLoginScreen(
                                 .background(Color.White, RoundedCornerShape(24.dp))
                                 .border(
                                     1.dp,
-                                    Color.LightGray.copy(alpha = 0.3f),
+                                    Color.Gray.copy(alpha = 0.5f),
                                     RoundedCornerShape(24.dp)
                                 )
                                 .padding(horizontal = 16.dp),
@@ -213,7 +213,7 @@ fun PopulateLoginScreen(
                                 .background(Color.White, RoundedCornerShape(24.dp))
                                 .border(
                                     1.dp,
-                                    Color.LightGray.copy(alpha = 0.3f),
+                                    Color.Gray.copy(alpha = 0.5f),
                                     RoundedCornerShape(24.dp)
                                 )
                                 .padding(horizontal = 16.dp)
