@@ -194,7 +194,7 @@ fun PopulateRegisterScreen(
                             Icon(
                                 imageVector = Icons.Filled.Person,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Gray,
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -232,7 +232,7 @@ fun PopulateRegisterScreen(
                             Icon(
                                 imageVector = Icons.Filled.Email,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Gray,
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -272,7 +272,7 @@ fun PopulateRegisterScreen(
                             Icon(
                                 imageVector = Icons.Default.Key,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Gray,
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -288,7 +288,7 @@ fun PopulateRegisterScreen(
                                 Icon(
                                     imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
-                                    tint = Color.LightGray
+                                    tint = Color.Gray
                                 )
                             }
                         }
@@ -320,7 +320,7 @@ fun PopulateRegisterScreen(
                             Icon(
                                 imageVector = Icons.Default.Key,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Gray,
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -338,7 +338,7 @@ fun PopulateRegisterScreen(
                                 Icon(
                                     imageVector = if (isConfirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isConfirmPasswordVisible) "Hide password" else "Show password",
-                                    tint = Color.LightGray
+                                    tint = Color.Gray
                                 )
                             }
                         }

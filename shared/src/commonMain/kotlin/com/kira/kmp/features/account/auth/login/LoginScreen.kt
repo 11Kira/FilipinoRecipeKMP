@@ -182,7 +182,7 @@ fun PopulateLoginScreen(
                             Icon(
                                 imageVector = Icons.Filled.Email,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Gray,
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -223,7 +223,7 @@ fun PopulateLoginScreen(
                             Icon(
                                 imageVector = Icons.Default.Key,
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Gray,
                             )
 
                             Spacer(modifier = Modifier.width(8.dp))
@@ -239,7 +239,7 @@ fun PopulateLoginScreen(
                                 Icon(
                                     imageVector = if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isVisible) "Hide password" else "Show password",
-                                    tint = Color.LightGray
+                                    tint = Color.Gray
                                 )
                             }
                         }
