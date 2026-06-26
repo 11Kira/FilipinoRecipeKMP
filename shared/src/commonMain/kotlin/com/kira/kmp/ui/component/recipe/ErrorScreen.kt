@@ -25,7 +25,9 @@ fun ErrorScreen(message: String, onRetry: () -> Unit) {
     ) {
         Icon(Icons.Default.CloudOff, contentDescription = null, modifier = Modifier.size(64.dp))
         Text(text = message, textAlign = TextAlign.Center, modifier = Modifier.padding(16.dp))
-        Button(onClick = onRetry) {
+        Button(
+            onClick = onRetry
+        ) {
             Text("Retry Connection")
         }
     }

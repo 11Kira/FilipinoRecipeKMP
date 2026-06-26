@@ -45,9 +45,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = koinViewModel(),
     onShowSnackbar: (String) -> Unit,
-    onLogoutNavigate: () -> Unit
+    onLogoutNavigate: () -> Unit,
+    viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.profileUiState.collectAsStateWithLifecycle()
 

@@ -53,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -73,9 +74,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = koinViewModel(),
     navController: NavController,
-    onShowSnackbar: (String) -> Unit
+    onShowSnackbar: (String) -> Unit,
+    viewModel: LoginViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = Unit) {
@@ -114,6 +115,7 @@ fun PopulateLoginScreen(
     var email by remember { mutableStateOf("") }
     val passwordState = rememberTextFieldState()
     var isVisible by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(passwordState.text) {
         snapshotFlow { passwordState.text }.collect {
@@ -211,7 +213,10 @@ fun PopulateLoginScreen(
                         TextObfuscationMode.RevealLastTyped
                     },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    onKeyboardAction = { onLoginClick(email, passwordState.text.toString()) },
+                    onKeyboardAction = {
+                        keyboardController?.hide()
+                        onLoginClick(email, passwordState.text.toString())
+                    },
                     modifier = Modifier.height(50.dp),
                     decorator = { innerTextField ->
                         Row(
@@ -273,6 +278,7 @@ fun PopulateLoginScreen(
 
                 Button(
                     onClick = {
+                        keyboardController?.hide()
                         onLoginClick(email, passwordState.text.toString())
                     },
                     enabled = !isLoading && viewModel.isInputValid,

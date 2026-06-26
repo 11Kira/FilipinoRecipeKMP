@@ -52,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -71,9 +72,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel = koinViewModel(),
     navController: NavController,
-    onShowSnackbar: (String) -> Unit
+    onShowSnackbar: (String) -> Unit,
+    viewModel: RegisterViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = Unit) {
@@ -122,6 +123,7 @@ fun PopulateRegisterScreen(
     val confirmPasswordState = rememberTextFieldState()
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val passwordsMatch =
         viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
@@ -315,6 +317,7 @@ fun PopulateRegisterScreen(
                     },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     onKeyboardAction = {
+                        keyboardController?.hide()
                         onRegisterClick(
                             email,
                             passwordState.text.toString(),
@@ -376,6 +379,7 @@ fun PopulateRegisterScreen(
 
                 Button(
                     onClick = {
+                        keyboardController?.hide()
                         onRegisterClick(email, passwordState.text.toString(), username)
                     },
                     enabled = !isLoading && viewModel.isInputValid,

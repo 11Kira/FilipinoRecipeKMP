@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.kira.kmp.domain.usecase.RecipeUseCase
 import com.kira.kmp.domain.usecase.UserUseCase
-import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val recipeUseCase: RecipeUseCase,
@@ -96,7 +94,7 @@ class RecipeListViewModel(
         _selectedDifficulties.value = emptySet()
     }
 
-    fun toggleFavorite(recipeId: String) {
+    /*fun toggleFavorite(recipeId: String) {
         val currentList = _recipeListUiState.value.recipes ?: emptyList()
         val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
         if (recipeIndex == -1) return
@@ -134,5 +132,5 @@ class RecipeListViewModel(
             }
             state.copy(recipes = updatedList)
         }
-    }
+    }*/
 }

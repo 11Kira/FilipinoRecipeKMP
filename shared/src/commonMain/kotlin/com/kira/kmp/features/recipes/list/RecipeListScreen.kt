@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kira.kmp.ui.component.recipe.ErrorScreen
 import com.kira.kmp.ui.component.recipe.RecipeFilter
 import com.kira.kmp.ui.component.recipe.RecipeFilterChip
 import com.kira.kmp.ui.component.recipe.RecipeList
@@ -74,12 +75,11 @@ fun RecipeListScreen(
         confirmValueChange = { newValue -> newValue != SheetValue.Hidden })
     val recipes = viewModel.recipePagingFlow.collectAsLazyPagingItems()
     val focusManager = LocalFocusManager.current
-
-    LaunchedEffect(recipes.loadState) {
-        val refresh = recipes.loadState.refresh
-        if (refresh is LoadState.Error) {
-            println("RecipeListScreen Error: ${refresh.error.message}")
-            onShowSnackbar("Error: ${refresh.error.message}")
+    val refreshState = recipes.loadState.refresh
+    LaunchedEffect(recipes.loadState.append) {
+        val append = recipes.loadState.append
+        if (append is LoadState.Error) {
+            onShowSnackbar("Failed to load more recipes")
         }
     }
     val query by viewModel.searchQuery.collectAsState()
@@ -89,8 +89,8 @@ fun RecipeListScreen(
     val appliedFilterCount by viewModel.appliedFilterCount.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
 
-    LaunchedEffect(recipes.loadState.refresh) {
-        if (recipes.loadState.refresh is LoadState.NotLoading && recipes.itemCount > 0) {
+    LaunchedEffect(refreshState) {
+        if (refreshState is LoadState.NotLoading && recipes.itemCount > 0) {
             if (query != lastScrolledQuery) {
                 listState.scrollToItem(0)
                 lastScrolledQuery = query
@@ -102,13 +102,21 @@ fun RecipeListScreen(
             .fillMaxSize()
             .background(brush = ColorUtils().recipeListBackgroundGradient)
     ) {
-        RecipeList(
-            recipes = recipes,
-            listState = listState,
-            searchQuery = query,
-            contentPadding = contentPadding,
-            onItemClick = onItemClick
-        )
+
+        if (refreshState is LoadState.Error) {
+            ErrorScreen(
+                message = "Render is waking up... try again!",
+                onRetry = { recipes.retry() }
+            )
+        } else {
+            RecipeList(
+                recipes = recipes,
+                listState = listState,
+                searchQuery = query,
+                contentPadding = contentPadding,
+                onItemClick = onItemClick
+            )
+        }
 
         Box(
             modifier = Modifier
