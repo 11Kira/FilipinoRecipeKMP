@@ -40,7 +40,6 @@ import com.kira.kmp.ui.navigation.FavoritesRoute
 import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.ProfileRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
-import com.kira.kmp.ui.navigation.SplashRoute
 import com.kira.kmp.ui.theme.FilipinoRecipeTheme
 import com.kira.kmp.utils.ColorUtils
 import kotlinx.coroutines.launch
@@ -60,10 +59,8 @@ fun MainScreenView(viewModel: MainViewModel) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val isDetailScreen = currentDestination?.hasRoute<DetailScreenNavigation>() == true
-    val isAuthScreen = currentDestination?.hasRoute<SplashRoute>() == true ||
-            currentDestination?.hasRoute<LoginRoute>() == true ||
+    val isAuthScreen = currentDestination?.hasRoute<LoginRoute>() == true ||
             currentDestination?.hasRoute<RegisterRoute>() == true
-
     val shouldShowBottomBar = !isDetailScreen && !isAuthScreen
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()

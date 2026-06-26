@@ -12,7 +12,6 @@ import com.kira.kmp.features.account.profile.ProfileScreen
 import com.kira.kmp.features.recipes.details.RecipeDetailsScreen
 import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListScreen
 import com.kira.kmp.features.recipes.list.RecipeListScreen
-import com.kira.kmp.features.splash.SplashScreen
 
 @Composable
 fun AppNavHost(
@@ -22,9 +21,8 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = SplashRoute
+        startDestination = RecipeListRoute
     ) {
-        composable<SplashRoute> { SplashScreen(navController) }
         composable<LoginRoute> {
             LoginScreen(
                 navController = navController,
@@ -61,7 +59,7 @@ fun AppNavHost(
             ProfileScreen(
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
                 onLogoutNavigate = {
-                    navController.navigate(SplashRoute) {
+                    navController.navigate(RecipeListRoute) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
