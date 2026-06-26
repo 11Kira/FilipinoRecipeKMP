@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.kira.kmp.domain.usecase.UserUseCase
-import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -13,8 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class FavoriteRecipeListViewModel(
     private val userUseCase: UserUseCase,
@@ -40,43 +37,43 @@ class FavoriteRecipeListViewModel(
         _searchQuery.value = newQuery
     }
 
-    fun toggleFavorite(recipeId: String) {
-        val currentList = _favoriteRecipeListUiState.value.recipes ?: emptyList()
-        val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
-        if (recipeIndex == -1) return
+    /*    fun toggleFavorite(recipeId: String) {
+            val currentList = _favoriteRecipeListUiState.value.recipes ?: emptyList()
+            val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
+            if (recipeIndex == -1) return
 
-        val originalRecipe = currentList[recipeIndex]
-        val wasFavorited = originalRecipe.isFavorited
+            val originalRecipe = currentList[recipeIndex]
+            val wasFavorited = originalRecipe.isFavorited
 
-        _favoriteRecipeListUiState.update { state ->
-            val updatedList = currentList.toMutableList().apply {
-                this[recipeIndex] = originalRecipe.copy(isFavorited = !wasFavorited)
+            _favoriteRecipeListUiState.update { state ->
+                val updatedList = currentList.toMutableList().apply {
+                    this[recipeIndex] = originalRecipe.copy(isFavorited = !wasFavorited)
+                }
+                state.copy(recipes = updatedList)
             }
-            state.copy(recipes = updatedList)
-        }
 
-        viewModelScope.launch {
-            try {
-                val response = userUseCase.toggleFavoriteRecipe(recipeId)
-                if (response.status != ResponseStatus.SUCCESS) {
+            viewModelScope.launch {
+                try {
+                    val response = userUseCase.toggleFavoriteRecipe(recipeId)
+                    if (response.status != ResponseStatus.SUCCESS) {
+                        rollbackListFavorite(recipeId, wasFavorited)
+                    }
+                } catch (e: Exception) {
                     rollbackListFavorite(recipeId, wasFavorited)
                 }
-            } catch (e: Exception) {
-                rollbackListFavorite(recipeId, wasFavorited)
             }
         }
-    }
 
-    private fun rollbackListFavorite(recipeId: String, wasFavorited: Boolean) {
-        val currentList = _favoriteRecipeListUiState.value.recipes ?: return
-        val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
-        if (recipeIndex == -1) return
+        private fun rollbackListFavorite(recipeId: String, wasFavorited: Boolean) {
+            val currentList = _favoriteRecipeListUiState.value.recipes ?: return
+            val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
+            if (recipeIndex == -1) return
 
-        _favoriteRecipeListUiState.update { state ->
-            val updatedList = currentList.toMutableList().apply {
-                this[recipeIndex] = this[recipeIndex].copy(isFavorited = wasFavorited)
+            _favoriteRecipeListUiState.update { state ->
+                val updatedList = currentList.toMutableList().apply {
+                    this[recipeIndex] = this[recipeIndex].copy(isFavorited = wasFavorited)
+                }
+                state.copy(recipes = updatedList)
             }
-            state.copy(recipes = updatedList)
-        }
-    }
+        }*/
 }

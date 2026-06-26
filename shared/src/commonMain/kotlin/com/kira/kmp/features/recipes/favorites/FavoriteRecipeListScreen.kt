@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -32,9 +31,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.paging.LoadState
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kira.kmp.model.Recipe
+import com.kira.kmp.ui.component.recipe.ErrorScreen
 import com.kira.kmp.ui.component.recipe.RecipeList
 import com.kira.kmp.ui.component.recipe.RecipeSearchField
 import com.kira.kmp.utils.ColorUtils
@@ -42,21 +40,22 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FavoriteRecipeListScreen(
-    viewModel: FavoriteRecipeListViewModel = koinViewModel(),
     contentPadding: PaddingValues,
     onItemClick: (String) -> Unit,
-    onShowSnackbar: (String) -> Unit
+    onShowSnackbar: (String) -> Unit,
+    viewModel: FavoriteRecipeListViewModel = koinViewModel(),
 ) {
     val recipes = viewModel.favoritePagingFlow.collectAsLazyPagingItems()
-
-    LaunchedEffect(recipes.loadState) {
-        val refresh = recipes.loadState.refresh
-        if (refresh is LoadState.Error) {
-            println("FavoriteRecipeListScreen Error: ${refresh.error.message}")
-            onShowSnackbar("Error: ${refresh.error.message}")
+    val focusManager = LocalFocusManager.current
+    val refreshState = recipes.loadState.refresh
+    LaunchedEffect(recipes.loadState.append) {
+        val append = recipes.loadState.append
+        if (append is LoadState.Error) {
+            onShowSnackbar("Failed to load more recipes")
         }
     }
-
+    val query by viewModel.searchQuery.collectAsState()
+    var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -69,29 +68,11 @@ fun FavoriteRecipeListScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-    MainFavoriteRecipeScreen(
-        viewModel = viewModel,
-        recipes = recipes,
-        contentPadding = contentPadding,
-        onItemClick = onItemClick
-    )
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainFavoriteRecipeScreen(
-    viewModel: FavoriteRecipeListViewModel,
-    recipes: LazyPagingItems<Recipe>,
-    contentPadding: PaddingValues,
-    onItemClick: (String) -> Unit
-) {
     val listState = rememberLazyListState()
-    val focusManager = LocalFocusManager.current
-    val query by viewModel.searchQuery.collectAsState()
-    var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(recipes.loadState.refresh) {
-        if (recipes.loadState.refresh is LoadState.NotLoading && recipes.itemCount > 0) {
+    LaunchedEffect(refreshState) {
+        if (refreshState is LoadState.NotLoading && recipes.itemCount > 0) {
             if (query != lastScrolledQuery) {
                 listState.scrollToItem(0)
                 lastScrolledQuery = query
@@ -103,13 +84,20 @@ fun MainFavoriteRecipeScreen(
             .fillMaxSize()
             .background(brush = ColorUtils().recipeListBackgroundGradient)
     ) {
-        RecipeList(
-            recipes = recipes,
-            listState = listState,
-            searchQuery = query,
-            contentPadding = contentPadding,
-            onItemClick = onItemClick,
-        )
+        if (refreshState is LoadState.Error) {
+            ErrorScreen(
+                message = "Render is waking up... try again!",
+                onRetry = { recipes.retry() }
+            )
+        } else {
+            RecipeList(
+                recipes = recipes,
+                listState = listState,
+                searchQuery = query,
+                contentPadding = contentPadding,
+                onItemClick = onItemClick
+            )
+        }
 
         Box(
             modifier = Modifier
