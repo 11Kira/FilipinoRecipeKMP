@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
@@ -52,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -164,6 +167,7 @@ fun PopulateLoginScreen(
                         email = it
                         viewModel.updateEmail(it)
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier
                         .height(50.dp),
                     singleLine = true,
@@ -206,6 +210,8 @@ fun PopulateLoginScreen(
                     } else {
                         TextObfuscationMode.RevealLastTyped
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    onKeyboardAction = { onLoginClick(email, passwordState.text.toString()) },
                     modifier = Modifier.height(50.dp),
                     decorator = { innerTextField ->
                         Row(
@@ -235,11 +241,15 @@ fun PopulateLoginScreen(
                                 innerTextField()
                             }
 
-                            IconButton(onClick = { isVisible = !isVisible }) {
+                            IconButton(
+                                onClick = { isVisible = !isVisible },
+                                modifier = Modifier.focusable(false)
+                            ) {
                                 Icon(
                                     imageVector = if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isVisible) "Hide password" else "Show password",
-                                    tint = Color.Gray
+                                    tint = Color.Gray,
+
                                 )
                             }
                         }

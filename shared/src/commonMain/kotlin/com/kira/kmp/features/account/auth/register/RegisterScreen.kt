@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
@@ -51,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -176,6 +179,7 @@ fun PopulateRegisterScreen(
                 BasicTextField(
                     value = username,
                     onValueChange = { username = it },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier
                         .height(50.dp),
                     singleLine = true,
@@ -214,6 +218,7 @@ fun PopulateRegisterScreen(
                 BasicTextField(
                     value = email,
                     onValueChange = { email = it },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier
                         .height(50.dp),
                     singleLine = true,
@@ -256,6 +261,7 @@ fun PopulateRegisterScreen(
                     } else {
                         TextObfuscationMode.RevealLastTyped
                     },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier.height(50.dp),
                     decorator = { innerTextField ->
                         Row(
@@ -284,7 +290,10 @@ fun PopulateRegisterScreen(
                                 innerTextField()
                             }
 
-                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            IconButton(
+                                onClick = { isPasswordVisible = !isPasswordVisible },
+                                modifier = Modifier.focusable(false)
+                            ) {
                                 Icon(
                                     imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
@@ -303,6 +312,14 @@ fun PopulateRegisterScreen(
                         TextObfuscationMode.Visible
                     } else {
                         TextObfuscationMode.RevealLastTyped
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    onKeyboardAction = {
+                        onRegisterClick(
+                            email,
+                            passwordState.text.toString(),
+                            username
+                        )
                     },
                     modifier = Modifier.height(50.dp),
                     decorator = { innerTextField ->
@@ -332,9 +349,10 @@ fun PopulateRegisterScreen(
                                 innerTextField()
                             }
 
-                            IconButton(onClick = {
-                                isConfirmPasswordVisible = !isConfirmPasswordVisible
-                            }) {
+                            IconButton(
+                                onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible },
+                                modifier = Modifier.focusable(false)
+                            ) {
                                 Icon(
                                     imageVector = if (isConfirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isConfirmPasswordVisible) "Hide password" else "Show password",
