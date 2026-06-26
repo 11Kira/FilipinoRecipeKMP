@@ -123,16 +123,15 @@ fun PopulateLoginScreen(
                 .fillMaxSize()
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
             Image(
                 painter = painterResource(Res.drawable.logo),
                 contentDescription = "Project drawable image",
                 modifier = Modifier
-                    .size(350.dp),
+                    .size(350.dp)
+                    .padding(top = 40.dp),
                 contentScale = ContentScale.Crop
             )
-
             BasicTextField(
                 value = email,
                 onValueChange = {
