@@ -54,8 +54,6 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
                 loadTokens {
                     val accessToken = tokenManager.getAccessToken()
                     val refreshToken = tokenManager.getRefreshToken()
-
-                    // Only return tokens if they actually exist
                     if (!accessToken.isNullOrBlank() && !refreshToken.isNullOrBlank()) {
                         BearerTokens(accessToken, refreshToken)
                     } else {
@@ -92,9 +90,7 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
 
                 sendWithoutRequest { request ->
                     val path = request.url.encodedPath
-                    path.contains("auth/login") ||
-                            path.contains("auth/register") ||
-                            path.contains("auth/refresh")
+                    !path.contains("auth/")
                 }
             }
         }
