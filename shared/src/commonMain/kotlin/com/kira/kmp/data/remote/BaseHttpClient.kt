@@ -90,7 +90,8 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
 
                 sendWithoutRequest { request ->
                     val path = request.url.encodedPath
-                    !path.contains("auth/")
+                    val isLoggedIn = tokenManager.getAccessToken() != null
+                    !path.contains("auth/") && isLoggedIn
                 }
             }
         }
