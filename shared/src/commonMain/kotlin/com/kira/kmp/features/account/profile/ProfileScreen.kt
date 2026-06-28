@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -87,21 +88,19 @@ fun PopulateProfileScreen(
             .fillMaxSize()
             .background(brush = ColorUtils().recipeListBackgroundGradient)
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(brush = ColorUtils().recipeListBackgroundGradient)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
+            Spacer(
                 modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .windowInsetsTopHeight(WindowInsets.statusBars)
+                    .fillMaxWidth()
+            )
+            Box(
+                modifier = Modifier.fillMaxWidth().wrapContentSize()
             ) {
-                Spacer(
-                    modifier = Modifier
-                        .windowInsetsTopHeight(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -116,101 +115,103 @@ fun PopulateProfileScreen(
                     painter = painterResource(Res.drawable.logo),
                     contentDescription = "Project drawable image",
                     modifier = Modifier
-                        .size(350.dp),
-                    contentScale = ContentScale.Crop
+                        .size(350.dp)
+                        .align(Alignment.TopCenter),
+                    contentScale = ContentScale.Crop,
                 )
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    BasicTextField(
-                        value = userProfile.username,
-                        enabled = false,
-                        onValueChange = {},
-                        modifier = Modifier.height(50.dp),
-                        singleLine = true,
-                        decorationBox = { innerTextField ->
-                            Row(
-                                modifier = Modifier
-                                    .background(Color.White, RoundedCornerShape(24.dp))
-                                    .border(
-                                        1.dp,
-                                        Color.Gray.copy(alpha = 0.5f),
-                                        RoundedCornerShape(24.dp)
-                                    )
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Person,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                BasicTextField(
+                    value = userProfile.username,
+                    enabled = false,
+                    onValueChange = {},
+                    modifier = Modifier.height(50.dp),
+                    singleLine = true,
+                    decorationBox = { innerTextField ->
+                        Row(
+                            modifier = Modifier
+                                .background(Color.White, RoundedCornerShape(24.dp))
+                                .border(
+                                    1.dp,
+                                    Color.Gray.copy(alpha = 0.5f),
+                                    RoundedCornerShape(24.dp)
                                 )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Box(modifier = Modifier.weight(1f)) {
-                                    innerTextField()
-                                }
-                            }
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    BasicTextField(
-                        value = userProfile.email,
-                        enabled = false,
-                        onValueChange = {},
-                        modifier = Modifier.height(50.dp),
-                        singleLine = true,
-                        decorationBox = { innerTextField ->
-                            Row(
-                                modifier = Modifier
-                                    .background(Color.White, RoundedCornerShape(24.dp))
-                                    .border(
-                                        1.dp,
-                                        Color.Gray.copy(alpha = 0.5f),
-                                        RoundedCornerShape(24.dp)
-                                    )
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Email,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Box(modifier = Modifier.weight(1f)) {
-                                    innerTextField()
-                                }
-                            }
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Button(
-                        onClick = {
-                            viewModel.logout(
-                                onLogout = onLogoutNavigate
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = null,
+                                tint = Color.Gray,
                             )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF7B5DB0),
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Log out")
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Box(modifier = Modifier.weight(1f)) {
+                                innerTextField()
+                            }
+                        }
                     }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                BasicTextField(
+                    value = userProfile.email,
+                    enabled = false,
+                    onValueChange = {},
+                    modifier = Modifier.height(50.dp),
+                    singleLine = true,
+                    decorationBox = { innerTextField ->
+                        Row(
+                            modifier = Modifier
+                                .background(Color.White, RoundedCornerShape(24.dp))
+                                .border(
+                                    1.dp,
+                                    Color.Gray.copy(alpha = 0.5f),
+                                    RoundedCornerShape(24.dp)
+                                )
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Email,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Box(modifier = Modifier.weight(1f)) {
+                                innerTextField()
+                            }
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.logout(
+                            onLogout = onLogoutNavigate
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF7B5DB0),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Log out")
                 }
             }
         }
