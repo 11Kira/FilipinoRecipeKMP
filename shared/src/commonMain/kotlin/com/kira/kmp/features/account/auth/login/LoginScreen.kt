@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
@@ -138,25 +139,30 @@ fun PopulateLoginScreen(
                     .windowInsetsTopHeight(WindowInsets.statusBars)
                     .fillMaxWidth()
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            Box(
+                modifier = Modifier.fillMaxWidth().wrapContentSize()
             ) {
-                CircularIconButton(
-                    icon = Icons.Default.ArrowBack,
-                    onClick = { navController.popBackStack() })
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CircularIconButton(
+                        icon = Icons.Default.ArrowBack,
+                        onClick = { navController.popBackStack() })
+                }
+                Image(
+                    painter = painterResource(Res.drawable.logo),
+                    contentDescription = "Project drawable image",
+                    modifier = Modifier
+                        .size(350.dp)
+                        .align(Alignment.TopCenter),
+                    contentScale = ContentScale.Crop,
+                )
             }
-            Image(
-                painter = painterResource(Res.drawable.logo),
-                contentDescription = "Project drawable image",
-                modifier = Modifier
-                    .size(350.dp),
-                contentScale = ContentScale.Crop
-            )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
