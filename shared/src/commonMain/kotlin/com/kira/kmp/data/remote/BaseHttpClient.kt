@@ -20,6 +20,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -53,7 +54,9 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
                 loadTokens {
                     val accessToken = tokenManager.getAccessToken()
                     val refreshToken = tokenManager.getRefreshToken()
-                    if (accessToken != null && refreshToken != null) {
+
+                    // Only return tokens if they actually exist
+                    if (!accessToken.isNullOrBlank() && !refreshToken.isNullOrBlank()) {
                         BearerTokens(accessToken, refreshToken)
                     } else {
                         null
@@ -61,38 +64,37 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
                 }
 
                 refreshTokens {
-                    val refreshToken = tokenManager.getRefreshToken()
-                    if (!refreshToken.isNullOrBlank()) {
-                        try {
-                            // We can use a clean, separate, basic client or send a post directly via client
-                            // To prevent interceptor recursion, auth plugin skips auth headers for refreshTokens requests automatically
-                            val response = client.post("auth/refresh") {
-                                contentType(ContentType.Application.Json)
-                                setBody(RefreshRequest(refreshToken))
-                            }.body<ApiResponse<Token>>()
+                    val oldRefreshToken = oldTokens?.refreshToken
+                    if (oldRefreshToken.isNullOrBlank()) return@refreshTokens null
+                    try {
+                        // IMPORTANT: Use a 'client' instance that does NOT have the Auth plugin installed
+                        // to avoid infinite loops, or use the current 'client' (Ktor handles this safely)
+                        val response = client.post("auth/refresh") {
+                            // Force this request to NOT use the Auth plugin so we don't loop
+                            markAsRefreshTokenRequest()
+                            contentType(ContentType.Application.Json)
+                            setBody(RefreshRequest(oldRefreshToken))
+                        }.body<ApiResponse<Token>>()
 
-                            val tokens = response.data
-                            if (tokens != null) {
-                                tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                                BearerTokens(tokens.accessToken, tokens.refreshToken)
-                            } else {
-                                tokenManager.clearTokens()
-                                null
-                            }
-                        } catch (e: Exception) {
+                        val tokens = response.data
+                        if (tokens != null) {
+                            tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
+                            BearerTokens(tokens.accessToken, tokens.refreshToken)
+                        } else {
                             tokenManager.clearTokens()
                             null
                         }
-                    } else {
+                    } catch (e: Exception) {
+                        tokenManager.clearTokens()
                         null
                     }
                 }
 
                 sendWithoutRequest { request ->
-                    val path = request.url.buildString()
-                    !path.contains("auth/login") &&
-                            !path.contains("auth/register") &&
-                            !path.contains("auth/refresh")
+                    val path = request.url.encodedPath
+                    path.contains("auth/login") ||
+                            path.contains("auth/register") ||
+                            path.contains("auth/refresh")
                 }
             }
         }
