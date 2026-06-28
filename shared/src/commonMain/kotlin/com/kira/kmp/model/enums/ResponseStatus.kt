@@ -1,9 +1,14 @@
 package com.kira.kmp.model.enums
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 enum class ResponseStatus {
+    @SerialName("SUCCESS")
     SUCCESS,
-    FAILED
+    @SerialName("FAILED")
+    FAILED,
+    @SerialName("UNKNOWN")
+    UNKNOWN
 }
