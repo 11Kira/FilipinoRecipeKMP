@@ -29,7 +29,7 @@ fun RoundedTextWithIcon(text: String, icon: ImageVector, backgroundColor: Long, 
                 shape = RoundedCornerShape(12.dp)
             )
             .border(width = 0.5.dp, color = Color.White, shape = RoundedCornerShape(12.dp))
-            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .padding(horizontal = 8.dp)
     ) {
         Icon(
             imageVector = icon,
