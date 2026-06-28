@@ -60,6 +60,7 @@ fun FavoriteRecipeListScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
+                // Always refresh to get the latest favorite status
                 recipes.refresh()
             }
         }
@@ -86,7 +87,7 @@ fun FavoriteRecipeListScreen(
     ) {
         if (refreshState is LoadState.Error) {
             ErrorScreen(
-                message = "Render is waking up... try again!",
+                message = "Connection error... try again!",
                 onRetry = { recipes.retry() }
             )
         } else {

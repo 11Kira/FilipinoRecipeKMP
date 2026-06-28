@@ -105,7 +105,7 @@ fun RecipeListScreen(
 
         if (refreshState is LoadState.Error) {
             ErrorScreen(
-                message = "Render is waking up... try again!",
+                message = "Connection error... try again!",
                 onRetry = { recipes.retry() }
             )
         } else {

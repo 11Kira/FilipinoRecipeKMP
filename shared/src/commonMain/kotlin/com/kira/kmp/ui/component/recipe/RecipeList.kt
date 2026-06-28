@@ -27,7 +27,7 @@ fun RecipeList(
 ) {
     val refreshState = recipes.loadState.refresh
     val shimmerBrush = RecipeShimmerBrush()
-    
+
     Box(modifier = Modifier.fillMaxSize()) {
         if (refreshState is LoadState.Error) {
             Text(
@@ -47,7 +47,8 @@ fun RecipeList(
             ),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            if (refreshState is LoadState.Loading) {
+            // FIX: Only show shimmer if loading AND there is no existing data to show
+            if (refreshState is LoadState.Loading && recipes.itemCount == 0) {
                 items(5) {
                     RecipeShimmerItem(shimmerBrush = shimmerBrush)
                 }

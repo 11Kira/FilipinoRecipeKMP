@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ApiResponse<T>(
     @SerialName("status")
-    val status: ResponseStatus,
+    val status: ResponseStatus? = null,
     @SerialName("message")
-    val message: String,
+    val message: String? = null,
     @SerialName("data")
     val data: T? = null,
     @SerialName("paging")
