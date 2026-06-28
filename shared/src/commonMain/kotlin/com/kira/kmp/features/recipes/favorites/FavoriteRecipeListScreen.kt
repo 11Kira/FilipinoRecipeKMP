@@ -60,9 +60,8 @@ fun FavoriteRecipeListScreen(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                if (recipes.itemCount == 0) {
-                    recipes.refresh()
-                }
+                // Always refresh to get the latest favorite status
+                recipes.refresh()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
