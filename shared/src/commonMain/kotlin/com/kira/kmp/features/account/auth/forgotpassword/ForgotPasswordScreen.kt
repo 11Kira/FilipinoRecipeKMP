@@ -133,7 +133,8 @@ fun PopulateForgotPasswordScreen(
                 is ForgotPasswordStep.EnterEmail -> {
                     EmailStepContent(
                         onNext = { email -> viewModel.requestOtp(email) },
-                        onBack = onNavigateBackToLogin
+                        onBack = onNavigateBackToLogin,
+                        viewModel = viewModel
                     )
                 }
 
@@ -155,7 +156,8 @@ fun PopulateForgotPasswordScreen(
                                     newPassword = newPassword
                                 )
                             )
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
 

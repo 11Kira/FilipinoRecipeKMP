@@ -1,5 +1,8 @@
 package com.kira.kmp.features.account.auth.forgotpassword
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kira.kmp.domain.usecase.AuthUseCase
@@ -26,6 +29,20 @@ class ForgotPasswordViewModel(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
+
+    private val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
+    var confirmPassword by mutableStateOf("")
+    fun updateEmail(newValue: String) {
+        email = newValue
+    }
+
+    val isEmailValid: Boolean
+        get() = emailRegex.matches(email)
+    val isPasswordValid: Boolean
+        get() = password.length >= 6 &&
+                password == confirmPassword
 
     fun requestOtp(email: String) {
         viewModelScope.launch {
