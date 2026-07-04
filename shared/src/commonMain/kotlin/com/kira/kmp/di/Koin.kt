@@ -14,6 +14,7 @@ import com.kira.kmp.data.repository.UserRepository
 import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.domain.usecase.RecipeUseCase
 import com.kira.kmp.domain.usecase.UserUseCase
+import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
 import com.kira.kmp.features.account.auth.login.LoginViewModel
 import com.kira.kmp.features.account.auth.register.RegisterViewModel
 import com.kira.kmp.features.account.profile.ProfileViewModel
@@ -59,6 +60,7 @@ val viewModelModule = module {
     factoryOf(::RecipeDetailsViewModel)
     factoryOf(::FavoriteRecipeListViewModel)
     factoryOf(::ProfileViewModel)
+    factoryOf(::ForgotPasswordViewModel)
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =

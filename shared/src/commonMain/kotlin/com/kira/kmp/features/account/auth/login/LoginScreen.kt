@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +40,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,6 +64,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
+import com.kira.kmp.ui.navigation.ForgotPasswordRoute
 import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.RecipeListRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
@@ -271,15 +272,13 @@ fun PopulateLoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.CenterEnd
                 ) {
-                    Text(
-                        text = "Forgot Password?",
-                        color = Color(0xFF7B5DB0),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .clickable { /* Navigate to a ForgotPasswordRoute later */ }
-                    )
+
+                    TextButton(
+                        onClick = { navController.navigate(ForgotPasswordRoute) },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        Text("Forgot Password?")
+                    }
                 }
 
                 Button(
@@ -313,20 +312,16 @@ fun PopulateLoginScreen(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
                     )
-                    Text(
-                        text = "Register",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF7B5DB0),
-                        modifier = Modifier
-                            .clickable(
-                                onClick = {
-                                    navController.navigate(RegisterRoute) {
-                                        popUpTo(LoginRoute) { inclusive = true }
-                                    }
-                                }
-                            )
-                    )
+                    TextButton(
+                        onClick = {
+                            navController.navigate(RegisterRoute) {
+                                popUpTo(LoginRoute) { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        Text("Register")
+                    }
                 }
             }
         }
