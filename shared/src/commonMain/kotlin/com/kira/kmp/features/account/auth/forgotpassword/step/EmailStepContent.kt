@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -44,8 +45,6 @@ fun EmailStepContent(
     Column(
         modifier = Modifier.fillMaxSize().padding(8.dp),
     ) {
-
-
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,13 +56,14 @@ fun EmailStepContent(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 fontSize = 14.sp,
-                text = "Enter your registered email to get a 6-digit verification code."
+                text = "Enter your registered email address to get a 6-digit verification code."
             )
             Spacer(modifier = Modifier.height(24.dp))
             BasicTextField(
                 value = email,
                 onValueChange = { email = it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onNext(email.trim()) }),
                 modifier = Modifier.height(50.dp),
                 singleLine = true,
                 decorationBox = { innerTextField ->
