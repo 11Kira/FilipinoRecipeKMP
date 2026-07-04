@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordScreen
 import com.kira.kmp.features.account.auth.login.LoginScreen
 import com.kira.kmp.features.account.auth.register.RegisterScreen
 import com.kira.kmp.features.account.profile.ProfileScreen
@@ -39,7 +40,7 @@ fun AppNavHost(
             RecipeListScreen(
                 contentPadding = contentPadding,
                 onItemClick = { id ->
-                    navController.navigate(DetailScreenNavigation(id))
+                    navController.navigate(DetailScreenRoute(id))
                 },
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
@@ -49,7 +50,7 @@ fun AppNavHost(
             FavoriteRecipeListScreen(
                 contentPadding = contentPadding,
                 onItemClick = { id ->
-                    navController.navigate(DetailScreenNavigation(id))
+                    navController.navigate(DetailScreenRoute(id))
                 },
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
@@ -67,8 +68,8 @@ fun AppNavHost(
             )
         }
 
-        composable<DetailScreenNavigation> { backStackEntry ->
-            val args = backStackEntry.toRoute<DetailScreenNavigation>()
+        composable<DetailScreenRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<DetailScreenRoute>()
             RecipeDetailsScreen(
                 id = args.id,
                 onShowSnackbar = onShowSnackbar,
@@ -77,6 +78,15 @@ fun AppNavHost(
                 },
                 onNavigateToLogin = {
                     navController.navigate(LoginRoute)
+                }
+            )
+        }
+
+        composable<ForgotPasswordRoute> {
+            ForgotPasswordScreen(
+                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
+                onNavigateBackToLogin = {
+                    navController.navigateUp()
                 }
             )
         }

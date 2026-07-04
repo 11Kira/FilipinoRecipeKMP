@@ -18,4 +18,7 @@ data object FavoritesRoute
 data object ProfileRoute
 
 @Serializable
-data class DetailScreenNavigation(val id: String)
+data class DetailScreenRoute(val id: String)
+
+@Serializable
+data object ForgotPasswordRoute

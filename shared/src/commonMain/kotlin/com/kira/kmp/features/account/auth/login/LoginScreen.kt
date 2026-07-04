@@ -64,6 +64,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
+import com.kira.kmp.ui.navigation.ForgotPasswordRoute
 import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.RecipeListRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
@@ -278,7 +279,7 @@ fun PopulateLoginScreen(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
                             .padding(vertical = 8.dp)
-                            .clickable { /* Navigate to a ForgotPasswordRoute later */ }
+                            .clickable { navController.navigate(ForgotPasswordRoute) }
                     )
                 }
 

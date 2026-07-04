@@ -35,7 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.ui.navigation.AppNavHost
 import com.kira.kmp.ui.navigation.BottomMenuItem
-import com.kira.kmp.ui.navigation.DetailScreenNavigation
+import com.kira.kmp.ui.navigation.DetailScreenRoute
 import com.kira.kmp.ui.navigation.FavoritesRoute
 import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.ProfileRoute
@@ -58,7 +58,7 @@ fun MainScreenView(viewModel: MainViewModel) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val isDetailScreen = currentDestination?.hasRoute<DetailScreenNavigation>() == true
+    val isDetailScreen = currentDestination?.hasRoute<DetailScreenRoute>() == true
     val isAuthScreen = currentDestination?.hasRoute<LoginRoute>() == true ||
             currentDestination?.hasRoute<RegisterRoute>() == true
     val shouldShowBottomBar = !isDetailScreen && !isAuthScreen

@@ -18,7 +18,7 @@ class ForgotPasswordViewModel(
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
     private val _currentStep = MutableStateFlow<ForgotPasswordStep>(ForgotPasswordStep.EnterEmail)
-    private val currentStep: StateFlow<ForgotPasswordStep> = _currentStep
+    val currentStep: StateFlow<ForgotPasswordStep> = _currentStep
 
     private val _forgotPasswordState: MutableSharedFlow<ForgotPasswordState> = MutableSharedFlow()
     val forgotPasswordState
