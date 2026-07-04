@@ -63,9 +63,9 @@ fun ProfileScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         uiState.profile?.let { profile ->
             PopulateProfileScreen(
-                viewModel = viewModel,
                 userProfile = profile,
-                onLogoutNavigate = onLogoutNavigate
+                onLogoutNavigate = onLogoutNavigate,
+                viewModel = viewModel,
             )
         }
 
@@ -77,9 +77,9 @@ fun ProfileScreen(
 
 @Composable
 fun PopulateProfileScreen(
-    viewModel: ProfileViewModel,
     userProfile: User,
-    onLogoutNavigate: () -> Unit
+    onLogoutNavigate: () -> Unit,
+    viewModel: ProfileViewModel,
 ) {
     Box(
         modifier = Modifier

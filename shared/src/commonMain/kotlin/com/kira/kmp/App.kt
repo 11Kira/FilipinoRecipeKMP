@@ -37,6 +37,7 @@ import com.kira.kmp.ui.navigation.AppNavHost
 import com.kira.kmp.ui.navigation.BottomMenuItem
 import com.kira.kmp.ui.navigation.DetailScreenRoute
 import com.kira.kmp.ui.navigation.FavoritesRoute
+import com.kira.kmp.ui.navigation.ForgotPasswordRoute
 import com.kira.kmp.ui.navigation.LoginRoute
 import com.kira.kmp.ui.navigation.ProfileRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
@@ -60,7 +61,8 @@ fun MainScreenView(viewModel: MainViewModel) {
     val currentDestination = navBackStackEntry?.destination
     val isDetailScreen = currentDestination?.hasRoute<DetailScreenRoute>() == true
     val isAuthScreen = currentDestination?.hasRoute<LoginRoute>() == true ||
-            currentDestination?.hasRoute<RegisterRoute>() == true
+            currentDestination?.hasRoute<RegisterRoute>() == true ||
+            currentDestination?.hasRoute<ForgotPasswordRoute>() == true
     val shouldShowBottomBar = !isDetailScreen && !isAuthScreen
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
