@@ -58,6 +58,7 @@ class ProfileViewModel(
                 authUseCase.logout(LogoutRequest(refreshToken))
             } finally {
                 tokenManager.clearTokens()
+                authUseCase.clearNetworkSession()
                 onLogout.invoke()
             }
         }

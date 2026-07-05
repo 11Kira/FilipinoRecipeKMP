@@ -35,4 +35,8 @@ class AuthUseCase(
     suspend fun resetPassword(request: ResetPasswordRequest): ApiResponse<Unit> {
         return authRepository.resetPassword(request)
     }
+
+    fun clearNetworkSession() {
+        authRepository.clearKtorAuthCache()
+    }
 }
