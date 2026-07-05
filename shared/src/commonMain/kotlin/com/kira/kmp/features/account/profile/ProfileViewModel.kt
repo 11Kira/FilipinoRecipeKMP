@@ -32,6 +32,14 @@ class ProfileViewModel(
                     _profileUiState.update {
                         it.copy(
                             profile = response.data,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                } else {
+                    _profileUiState.update {
+                        it.copy(
+                            error = response.message ?: "Failed to load profile",
                             isLoading = false
                         )
                     }
