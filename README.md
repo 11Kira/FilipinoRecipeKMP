@@ -1,38 +1,16 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# FilipinoRecipeKMP (Kotlin Multiplatform Client)
 
-* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with
-  Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for
-  your project.
+The modern architectural evolution of the Filipino Recipe platform. This project leverages Kotlin Multiplatform (KMP) to share 100% of the core business logic, data models, networking infrastructure, and authentication workflows between Android and iOS targets, while maintaining a unified UI engine.
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform
-  applications.
-  It contains several subfolders:
-    - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the
-      folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-      Similarly, if you want to edit the Desktop (JVM) specific part,
-      the [jvmMain](./shared/src/jvmMain/kotlin)
-      folder is the appropriate location.
+## 🛠️ Tech Stack & Cross-Platform Architecture
+* **Core Sharing (`commonMain`):** Kotlin Multiplatform
+* **UI Layer:** Compose Multiplatform / Jetpack Compose
+* **Networking:** Ktor HTTP Client (Engineered for cross-platform asynchronous I/O)
+* **Local Caching & Persistence:** Multiplatform Settings (`com.russhwolf:multiplatform-settings`)
+* **Dependency Injection:** Koin (Shared architecture multiplatform injection)
+* **Reactive Core:** Coroutines + StateFlow (State management) + SharedFlow (One-shot UI Events)
 
-### Running the apps
-
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these
-commands and options:
-
-- Android app: `./gradlew :androidApp:assembleDebug`
-- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
-
-### Running tests
-
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
-
-- Android tests: `./gradlew :shared:testAndroidHostTest`
-- iOS tests: `./gradlew :shared:iosSimulatorArm64Test`
-
----
-
-Learn more
-about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 🏗️ Architectural Deep Dive
+* **Advanced Session Management:** Implements an automated token synchronization mechanism via a custom Ktor Bearer Authentication provider. Features programmatic in-memory token cache purging (`clearAuthTokens()`) upon logout to prevent multi-session credential leakage.
+* **Declarative UI Routing State Engine:** Manages complex, multi-screen feature lifecycles (such as the 3-step secure password reset wizard) utilizing sealed state interfaces (`ForgotPasswordStep`) to eliminate state-leaks and UI over-recomposition.
+* **Unified Maintenance Lifecycle:** Modifying backend communication data objects or updating repository validation rules automatically cascades changes across both target mobile operating systems simultaneously.
