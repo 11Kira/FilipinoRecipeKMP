@@ -10,6 +10,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -275,7 +276,8 @@ fun PopulateLoginScreen(
 
                     TextButton(
                         onClick = { navController.navigate(ForgotPasswordRoute) },
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        contentPadding = PaddingValues(0.dp),
                     ) {
                         Text("Forgot Password?")
                     }
@@ -318,6 +320,7 @@ fun PopulateLoginScreen(
                                 popUpTo(LoginRoute) { inclusive = true }
                             }
                         },
+                        contentPadding = PaddingValues(0.dp),
                         modifier = Modifier.padding(vertical = 8.dp)
                     ) {
                         Text("Register")
