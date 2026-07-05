@@ -320,8 +320,7 @@ fun PopulateLoginScreen(
                                 popUpTo(LoginRoute) { inclusive = true }
                             }
                         },
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        contentPadding = PaddingValues(0.dp)
                     ) {
                         Text("Register")
                     }
