@@ -25,25 +25,30 @@ import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.utils.NetworkUtils
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val dataModule = module {
     single { createHttpClient(get()) }
-    single { AuthService(get()) }
-    single { RecipeService(get()) }
-    single { UserService(get()) }
+    // 🌟 Services
+    singleOf(::AuthService)
+    singleOf(::RecipeService)
+    singleOf(::UserService)
 
-    single { AuthRemoteSource(get()) }
-    single { RecipeRemoteSource(get()) }
-    single { UserRemoteSource(get()) }
+    // 🌟 Remote Sources
+    singleOf(::AuthRemoteSource)
+    singleOf(::RecipeRemoteSource)
+    singleOf(::UserRemoteSource)
 
-    single { AuthRepository(get()) }
-    single { RecipeRepository(get()) }
-    single { UserRepository(get()) }
+    // 🌟 Repositories (AuthRepository parameters are resolved implicitly now!)
+    singleOf(::AuthRepository)
+    singleOf(::RecipeRepository)
+    singleOf(::UserRepository)
 
-    single { TokenManager(get()) }
-    single { NetworkUtils() }
+    // 🌟 Utils & Local storage
+    singleOf(::TokenManager)
+    singleOf(::NetworkUtils)
 }
 
 val useCaseModule = module {

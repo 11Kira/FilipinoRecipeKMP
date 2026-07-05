@@ -5,12 +5,15 @@ import com.kira.kmp.model.request.LoginRequest
 import com.kira.kmp.model.request.LogoutRequest
 import com.kira.kmp.model.request.RegisterRequest
 import com.kira.kmp.model.request.ResetPasswordRequest
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.clearAuthTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 class AuthRepository(
     private val remoteSource: AuthRemoteSource,
+    private val httpClient: HttpClient
 ) {
     suspend fun register(body: RegisterRequest) =
         withContext(Dispatchers.IO) { remoteSource.register(body) }
@@ -29,4 +32,8 @@ class AuthRepository(
 
     suspend fun resetPassword(request: ResetPasswordRequest) =
         withContext(Dispatchers.IO) { remoteSource.resetPassword(request) }
+
+    fun clearKtorAuthCache() {
+        httpClient.clearAuthTokens()
+    }
 }
