@@ -51,6 +51,7 @@ val dataModule = module {
     singleOf(::TokenManager)
     singleOf(::NetworkUtils)
     single { get<AppDatabase>().recipeDao() }
+    single { get<AppDatabase>().userDao() }
 }
 
 val useCaseModule = module {

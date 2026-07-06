@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.kira.kmp.data.local.recipe.RecipeDao
 import com.kira.kmp.data.local.recipe.RecipeEntity
+import com.kira.kmp.data.local.user.UserDao
 import com.kira.kmp.data.local.user.UserEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -17,6 +18,7 @@ import kotlinx.coroutines.IO
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
+    abstract fun userDao(): UserDao
 }
 
 // The Room compiler generates the `actual` implementations.
