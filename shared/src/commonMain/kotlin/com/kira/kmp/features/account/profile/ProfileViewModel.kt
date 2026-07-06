@@ -23,30 +23,33 @@ class ProfileViewModel(
     private val _profileUiState = MutableStateFlow(ProfileUiState())
     val profileUiState = _profileUiState.asStateFlow()
 
+    init {
+        // Automatically pipe database cache mutations directly into the UI state
+        viewModelScope.launch {
+            userUseCase.userProfileFlow.collect { cachedProfile ->
+                _profileUiState.update { it.copy(profile = cachedProfile) }
+            }
+        }
+    }
+
     fun getUserProfile() {
         viewModelScope.launch {
-            _profileUiState.update { it.copy(isLoading = true) }
+            if (_profileUiState.value.profile == null) {
+                _profileUiState.update { it.copy(isLoading = true) }
+            }
             try {
-                val response = userUseCase.getUserProfile()
-                if (response.status == ResponseStatus.SUCCESS) {
-                    _profileUiState.update {
-                        it.copy(
-                            profile = response.data,
-                            isLoading = false,
-                            error = null
-                        )
-                    }
-                } else {
-                    _profileUiState.update {
-                        it.copy(
-                            error = response.message ?: "Failed to load profile",
-                            isLoading = false
-                        )
-                    }
+                val response = userUseCase.refreshUserProfile()
+                _profileUiState.update { it.copy(isLoading = false) }
+
+                if (response.status != ResponseStatus.SUCCESS) {
+                    _profileUiState.update { it.copy(error = response.message) }
                 }
             } catch (e: Exception) {
-                val errorMessage = networkUtils.parseNetworkError(e)
-                _profileUiState.update { it.copy(error = errorMessage, isLoading = false) }
+                _profileUiState.update { it.copy(isLoading = false) }
+                if (_profileUiState.value.profile == null) {
+                    val errorMessage = networkUtils.parseNetworkError(e)
+                    _profileUiState.update { it.copy(error = errorMessage) }
+                }
             }
         }
     }
@@ -57,6 +60,7 @@ class ProfileViewModel(
                 val refreshToken = tokenManager.getRefreshToken() ?: ""
                 authUseCase.logout(LogoutRequest(refreshToken))
             } finally {
+                userUseCase.clearLocalProfile()
                 tokenManager.clearTokens()
                 authUseCase.clearNetworkSession()
                 onLogout.invoke()

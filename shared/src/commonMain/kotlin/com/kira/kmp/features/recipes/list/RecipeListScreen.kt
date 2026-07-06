@@ -97,13 +97,18 @@ fun RecipeListScreen(
             }
         }
     }
+    LaunchedEffect(refreshState) {
+        if (refreshState is LoadState.Error && recipes.itemCount > 0) {
+            onShowSnackbar("Offline mode: Displaying cached recipes.")
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(brush = ColorUtils().recipeListBackgroundGradient)
     ) {
 
-        if (refreshState is LoadState.Error) {
+        if (refreshState is LoadState.Error && recipes.itemCount == 0) {
             ErrorScreen(
                 message = "Connection error... try again!",
                 onRetry = { recipes.retry() }

@@ -13,13 +13,15 @@ class RecipeRemoteSource(
         query: String,
         protein: String,
         difficulty: String,
-        page: Int
+        page: Int,
+        size: Int
     ) = withContext(Dispatchers.IO) {
         recipeService.getAllRecipes(
             query,
             protein,
             difficulty,
-            page
+            page,
+            size
         )
     }
 
