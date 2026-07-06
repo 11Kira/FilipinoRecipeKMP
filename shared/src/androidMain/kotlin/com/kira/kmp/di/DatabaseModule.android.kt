@@ -11,5 +11,4 @@ actual fun platformDatabaseModule() = module {
         val builder = getDatabaseBuilder(androidContext())
         createRoomDatabase(builder)
     }
-    single { get<AppDatabase>().recipeDao() }
 }

@@ -1,20 +1,27 @@
 package com.kira.kmp.data.repository
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.kira.kmp.data.local.RecipeDao
-import com.kira.kmp.data.remote.source.RecipePagingSource
+import com.kira.kmp.data.local.RecipeRemoteMediator
+import com.kira.kmp.data.local.toDomain
+import com.kira.kmp.data.local.toEntity
 import com.kira.kmp.data.remote.source.RecipeRemoteSource
 import com.kira.kmp.model.Recipe
+import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.model.response.ApiResponse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonObject
 
 class RecipeRepository(
     private val recipeRemoteSource: RecipeRemoteSource,
     private val recipeDao: RecipeDao
 ) {
+    @OptIn(ExperimentalPagingApi::class)
     fun getAllRecipes(
         query: String,
         protein: String,
@@ -26,18 +33,45 @@ class RecipeRepository(
                 prefetchDistance = 2,
                 enablePlaceholders = false,
                 initialLoadSize = 10
-            )
-        ) {
-            RecipePagingSource(
-                remoteSource = recipeRemoteSource,
+            ),
+            remoteMediator = RecipeRemoteMediator(
                 query = query,
                 protein = protein,
                 difficulty = difficulty,
-            )
-        }.flow
+                remoteSource = recipeRemoteSource,
+                recipeDao = recipeDao
+            ),
+            pagingSourceFactory = {
+                recipeDao.getAllRecipesPaging(query = "%$query%")
+            }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
 
     suspend fun getRecipeById(recipeId: String): ApiResponse<Recipe> {
-        return recipeRemoteSource.getRecipeById(recipeId = recipeId)
+        try {
+            val cachedEntity = recipeDao.getRecipeById(recipeId)
+            if (cachedEntity != null) {
+                return ApiResponse(
+                    status = ResponseStatus.SUCCESS,
+                    message = "Served from local cache",
+                    data = cachedEntity.toDomain()
+                )
+            }
+
+            val remoteResponse = recipeRemoteSource.getRecipeById(recipeId)
+
+            if (remoteResponse.status == ResponseStatus.SUCCESS && remoteResponse.data != null) {
+                recipeDao.insertRecipes(listOf(remoteResponse.data.toEntity()))
+            }
+
+            return remoteResponse
+        } catch (e: Exception) {
+            return ApiResponse(
+                status = ResponseStatus.FAILED,
+                message = e.message ?: "An unexpected error occurred"
+            )
+        }
     }
 
     suspend fun saveRecipe(body: JsonObject): ApiResponse<Recipe> {

@@ -1,5 +1,6 @@
 package com.kira.kmp.di
 
+import com.kira.kmp.data.local.AppDatabase
 import com.kira.kmp.data.local.TokenManager
 import com.kira.kmp.data.remote.AuthService
 import com.kira.kmp.data.remote.RecipeService
@@ -49,6 +50,7 @@ val dataModule = module {
     // 🌟 Utils & Local storage
     singleOf(::TokenManager)
     singleOf(::NetworkUtils)
+    single { get<AppDatabase>().recipeDao() }
 }
 
 val useCaseModule = module {

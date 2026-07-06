@@ -10,5 +10,4 @@ actual fun platformDatabaseModule() = module {
         val builder = getDatabaseBuilder()
         createRoomDatabase(builder)
     }
-    single { get<AppDatabase>().recipeDao() }
 }
