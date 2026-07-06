@@ -38,7 +38,7 @@ class ProfileViewModel(
                 _profileUiState.update { it.copy(isLoading = true) }
             }
             try {
-                val response = userUseCase.getUserProfile()
+                val response = userUseCase.refreshUserProfile()
                 _profileUiState.update { it.copy(isLoading = false) }
 
                 if (response.status != ResponseStatus.SUCCESS) {
