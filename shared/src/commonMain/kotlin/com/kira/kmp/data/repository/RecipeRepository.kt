@@ -3,6 +3,7 @@ package com.kira.kmp.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.kira.kmp.data.local.RecipeDao
 import com.kira.kmp.data.remote.source.RecipePagingSource
 import com.kira.kmp.data.remote.source.RecipeRemoteSource
 import com.kira.kmp.model.Recipe
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonObject
 
 class RecipeRepository(
-    private val recipeRemoteSource: RecipeRemoteSource
+    private val recipeRemoteSource: RecipeRemoteSource,
+    private val recipeDao: RecipeDao
 ) {
     fun getAllRecipes(
         query: String,
