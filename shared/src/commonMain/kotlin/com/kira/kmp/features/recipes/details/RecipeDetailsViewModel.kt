@@ -51,20 +51,26 @@ class RecipeDetailsViewModel(
     fun toggleFavoriteRecipe(recipeId: String) {
         val currentRecipe = _recipeDetailsUiState.value.recipe ?: return
         val wasFavorited = currentRecipe.isFavorited
+        val newFavoriteState = !wasFavorited
 
         _recipeDetailsUiState.update { state ->
-            state.copy(recipe = currentRecipe.copy(isFavorited = !wasFavorited))
+            state.copy(recipe = currentRecipe.copy(isFavorited = newFavoriteState))
         }
 
         viewModelScope.launch {
             try {
+                recipeUseCase.updateFavoriteStatus(recipeId, newFavoriteState)
                 val response = userUseCase.toggleFavoriteRecipe(recipeId)
                 if (response.status != ResponseStatus.SUCCESS) {
-                    rollbackFavorite(currentRecipe, wasFavorited, "Failed to update favorites.")
+                    recipeUseCase.updateFavoriteStatus(recipeId, wasFavorited)
+                    rollbackFavorite(
+                        currentRecipe,
+                        wasFavorited,
+                        "Failed to sync favorite with server."
+                    )
                 }
             } catch (e: Exception) {
-                val errorMessage = networkUtils.parseNetworkError(e)
-                rollbackFavorite(currentRecipe, wasFavorited, errorMessage)
+                println("📡 Network sync failed, favorite saved locally in Room.")
             }
         }
     }

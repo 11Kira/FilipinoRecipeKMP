@@ -74,6 +74,10 @@ class RecipeRepository(
         }
     }
 
+    suspend fun updateFavoriteStatus(recipeId: String, isFavorited: Boolean) {
+        recipeDao.updateFavoriteStatus(recipeId, isFavorited)
+    }
+
     suspend fun saveRecipe(body: JsonObject): ApiResponse<Recipe> {
         return recipeRemoteSource.saveRecipe(body)
     }

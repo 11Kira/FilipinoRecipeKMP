@@ -21,9 +21,12 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE id = :id")
     suspend fun getRecipeById(id: String): RecipeEntity?
 
-    @Query("SELECT * FROM recipes WHERE isFavorited = 1")
-    fun getFavoriteRecipes(): Flow<List<RecipeEntity>>
-
     @Query("DELETE FROM recipes")
     suspend fun deleteAllRecipes()
+
+    @Query("UPDATE recipes SET isFavorited = :isFavorited WHERE id = :recipeId")
+    suspend fun updateFavoriteStatus(recipeId: String, isFavorited: Boolean)
+
+    @Query("SELECT * FROM recipes WHERE isFavorited = 1")
+    fun getFavoriteRecipes(): Flow<List<RecipeEntity>>
 }
