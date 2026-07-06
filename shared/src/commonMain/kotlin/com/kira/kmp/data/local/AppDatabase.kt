@@ -6,10 +6,13 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.kira.kmp.data.local.recipe.RecipeDao
+import com.kira.kmp.data.local.recipe.RecipeEntity
+import com.kira.kmp.data.local.user.UserEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [RecipeEntity::class], version = 1)
+@Database(entities = [RecipeEntity::class, UserEntity::class], version = 1)
 @TypeConverters(Converters::class)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

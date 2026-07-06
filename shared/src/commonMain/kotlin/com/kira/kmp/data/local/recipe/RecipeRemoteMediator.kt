@@ -1,4 +1,4 @@
-package com.kira.kmp.data.local
+package com.kira.kmp.data.local.recipe
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType

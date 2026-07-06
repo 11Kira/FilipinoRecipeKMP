@@ -1,4 +1,4 @@
-package com.kira.kmp.data.local
+package com.kira.kmp.data.local.recipe
 
 import androidx.paging.PagingSource
 import androidx.room.Dao

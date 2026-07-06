@@ -40,5 +40,4 @@ class UserRepository(
     }
 
     suspend fun getUserProfile() = withContext(Dispatchers.IO) { userRemoteSource.getUserProfile() }
-
 }

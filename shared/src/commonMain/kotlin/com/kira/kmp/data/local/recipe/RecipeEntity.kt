@@ -1,8 +1,9 @@
-package com.kira.kmp.data.local
+package com.kira.kmp.data.local.recipe
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.kira.kmp.model.Ingredients
+import com.kira.kmp.model.Recipe
 
 @Entity(tableName = "recipes")
 data class RecipeEntity(
@@ -27,7 +28,7 @@ data class RecipeEntity(
     val published: Boolean
 )
 
-fun RecipeEntity.toDomain() = com.kira.kmp.model.Recipe(
+fun RecipeEntity.toDomain() = Recipe(
     id = id,
     title = title,
     description = description,
@@ -48,7 +49,7 @@ fun RecipeEntity.toDomain() = com.kira.kmp.model.Recipe(
     published = published
 )
 
-fun com.kira.kmp.model.Recipe.toEntity() = RecipeEntity(
+fun Recipe.toEntity() = RecipeEntity(
     id = id,
     title = title,
     description = description,
