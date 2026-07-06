@@ -71,7 +71,13 @@ val viewModelModule = module {
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
     startKoin {
         appDeclaration()
-        modules(dataModule, useCaseModule, viewModelModule, platformSettingsModule())
+        modules(
+            dataModule,
+            useCaseModule,
+            viewModelModule,
+            platformSettingsModule(),
+            platformDatabaseModule()
+        )
     }
 
 // called by iOS
