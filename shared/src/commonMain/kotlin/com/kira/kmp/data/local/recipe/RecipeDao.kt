@@ -15,8 +15,21 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes")
     fun getAllRecipes(): Flow<List<RecipeEntity>>
 
-    @Query("SELECT * FROM recipes WHERE title LIKE :query")
-    fun getAllRecipesPaging(query: String): PagingSource<Int, RecipeEntity>
+    @Query(
+        """
+        SELECT * FROM recipes 
+        WHERE title LIKE :query
+        AND (:hasProteinFilter = 0 OR LOWER(protein) IN (:proteins))
+        AND (:hasDifficultyFilter = 0 OR LOWER(difficulty) IN (:difficulties))
+    """
+    )
+    fun getAllRecipesPaging(
+        query: String,
+        hasProteinFilter: Boolean,
+        proteins: List<String>,
+        hasDifficultyFilter: Boolean,
+        difficulties: List<String>
+    ): PagingSource<Int, RecipeEntity>
 
     @Query("SELECT * FROM recipes WHERE id = :id")
     suspend fun getRecipeById(id: String): RecipeEntity?

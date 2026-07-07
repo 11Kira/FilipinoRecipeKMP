@@ -26,8 +26,11 @@ class RecipeRepository(
         query: String,
         protein: String,
         difficulty: String,
-    ): Flow<PagingData<Recipe>> =
-        Pager(
+    ): Flow<PagingData<Recipe>> {
+        val proteinList = if (protein.isBlank()) emptyList() else protein.split(",")
+        val difficultyList = if (difficulty.isBlank()) emptyList() else difficulty.split(",")
+
+        return Pager(
             PagingConfig(
                 pageSize = 10,
                 prefetchDistance = 2,
@@ -42,11 +45,18 @@ class RecipeRepository(
                 recipeDao = recipeDao
             ),
             pagingSourceFactory = {
-                recipeDao.getAllRecipesPaging(query = "%$query%")
+                recipeDao.getAllRecipesPaging(
+                    query = "%$query%",
+                    hasProteinFilter = proteinList.isNotEmpty(),
+                    proteins = proteinList,
+                    hasDifficultyFilter = difficultyList.isNotEmpty(),
+                    difficulties = difficultyList
+                )
             }
         ).flow.map { pagingData ->
             pagingData.map { it.toDomain() }
         }
+    }
 
     suspend fun getRecipeById(recipeId: String): ApiResponse<Recipe> {
         try {

@@ -1,33 +1,13 @@
 package com.kira.kmp.features.recipes.list
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,25 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kira.kmp.ui.component.recipe.ErrorScreen
+import com.kira.kmp.ui.component.FilterSheetContent
+import com.kira.kmp.ui.component.recipe.RecipeBaseScreen
 import com.kira.kmp.ui.component.recipe.RecipeFilter
-import com.kira.kmp.ui.component.recipe.RecipeFilterChip
-import com.kira.kmp.ui.component.recipe.RecipeList
-import com.kira.kmp.ui.component.recipe.RecipeSearchField
 import com.kira.kmp.utils.ColorUtils
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -74,8 +42,9 @@ fun RecipeListScreen(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue -> newValue != SheetValue.Hidden })
     val recipes = viewModel.recipePagingFlow.collectAsLazyPagingItems()
-    val focusManager = LocalFocusManager.current
     val refreshState = recipes.loadState.refresh
+    val isRefreshing = refreshState is LoadState.Loading
+
     LaunchedEffect(recipes.loadState.append) {
         val append = recipes.loadState.append
         if (append is LoadState.Error) {
@@ -84,183 +53,81 @@ fun RecipeListScreen(
     }
     val query by viewModel.searchQuery.collectAsState()
     var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
+    var hasShownOfflineSnackbar by rememberSaveable { mutableStateOf(false) }
     val selectedProteins by viewModel.selectedProteins.collectAsState()
     val selectedDifficulties by viewModel.selectedDifficulties.collectAsState()
     val appliedFilterCount by viewModel.appliedFilterCount.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(refreshState) {
-        if (refreshState is LoadState.NotLoading && recipes.itemCount > 0) {
-            if (query != lastScrolledQuery) {
-                listState.scrollToItem(0)
-                lastScrolledQuery = query
-            }
-        }
-    }
-    LaunchedEffect(refreshState) {
-        if (refreshState is LoadState.Error && recipes.itemCount > 0) {
-            onShowSnackbar("Offline mode: Displaying cached recipes.")
-        }
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(brush = ColorUtils().recipeListBackgroundGradient)
-    ) {
-
-        if (refreshState is LoadState.Error && recipes.itemCount == 0) {
-            ErrorScreen(
-                message = "Connection error... try again!",
-                onRetry = { recipes.retry() }
-            )
-        } else {
-            RecipeList(
-                recipes = recipes,
-                listState = listState,
-                searchQuery = query,
-                contentPadding = contentPadding,
-                onItemClick = onItemClick
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.3f),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            RecipeSearchField(
-                query = query,
-                textHint = "Search recipes...",
-                onValueChange = { viewModel.onSearchQueryChanged(it) },
-                onClear = { viewModel.onSearchQueryChanged("") },
-                focusManager = focusManager,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(50.dp)
-                    .shadow(elevation = 4.dp, shape = RoundedCornerShape(24.dp)),
-            )
-
-            RecipeFilter(
-                onButtonClick = {
-                    focusManager.clearFocus()
-                    viewModel.syncSelectedWithApplied()
-                    scope.launch {
-                        delay(100)
-                        showFilterSheet = true
-                        sheetState.show()
-                    }
-                },
-                appliedFilterCount = appliedFilterCount
-            )
-        }
-
-        if (showFilterSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showFilterSheet = false },
-                sheetState = sheetState,
-                containerColor = ColorUtils().pastelMint,
-                dragHandle = null,
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(370.dp)
-                        .padding(24.dp)
-                        .navigationBarsPadding()
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Filter Recipes",
-                            style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                        )
-                        IconButton(onClick = { showFilterSheet = false }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
-                        }
-                    }
-
-                    val proteins = listOf("Pork", "Beef", "Chicken", "Seafood", "Vegetables")
-                    val difficulties = listOf("Easy", "Medium", "Hard")
-
-                    Text(
-                        "Protein",
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    FlowRow(modifier = Modifier.fillMaxWidth()) {
-                        proteins.forEach { protein ->
-                            RecipeFilterChip(
-                                label = protein,
-                                isSelected = selectedProteins.contains(protein),
-                                onToggle = { viewModel.toggleProtein(protein) }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Text(
-                        "Difficulty",
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    FlowRow(modifier = Modifier.fillMaxWidth()) {
-                        difficulties.forEach { level ->
-                            RecipeFilterChip(
-                                label = level,
-                                isSelected = selectedDifficulties.contains(level),
-                                onToggle = { viewModel.toggleDifficulty(level) }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = { viewModel.resetFilters() },
-                            modifier = Modifier.weight(1f)
-                        ) { Text("Reset") }
-
-                        Button(
-                            onClick = {
-                                viewModel.applyFilters()
-                                scope.launch {
-                                    sheetState.hide()
-                                }.invokeOnCompletion {
-                                    showFilterSheet = false
-                                }
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-                        ) { Text("Apply") }
-                    }
+        when (refreshState) {
+            is LoadState.NotLoading -> {
+                hasShownOfflineSnackbar = false // Clean up error tracking flags
+                if (recipes.itemCount > 0 && query != lastScrolledQuery) {
+                    listState.scrollToItem(0)
+                    lastScrolledQuery = query
                 }
             }
+
+            is LoadState.Error -> {
+                if (recipes.itemCount > 0 && !hasShownOfflineSnackbar) {
+                    onShowSnackbar("Offline mode: Displaying cached recipes.")
+                    hasShownOfflineSnackbar = true
+                }
+            }
+
+            is LoadState.Loading -> {
+                hasShownOfflineSnackbar = false
+            }
+        }
+    }
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { recipes.refresh() }
+    ) {
+        RecipeBaseScreen(
+            recipes = recipes,
+            query = query,
+            onQueryChange = { viewModel.onSearchQueryChanged(it) },
+            onItemClick = onItemClick,
+            contentPadding = contentPadding,
+            searchHint = "Search recipes...",
+            actionSlot = {
+                RecipeFilter(
+                    onButtonClick = {
+                        viewModel.syncSelectedWithApplied()
+                        showFilterSheet = true
+                    },
+                    appliedFilterCount = appliedFilterCount
+                )
+            }
+        )
+    }
+
+    if (showFilterSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showFilterSheet = false },
+            sheetState = sheetState,
+            containerColor = ColorUtils().pastelMint,
+            dragHandle = null,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+        ) {
+            FilterSheetContent(
+                proteins = listOf("Pork", "Beef", "Chicken", "Seafood", "Vegetables"),
+                difficulties = listOf("Easy", "Medium", "Hard"),
+                selectedProteins = selectedProteins,
+                selectedDifficulties = selectedDifficulties,
+                onToggleProtein = { viewModel.toggleProtein(it) },
+                onToggleDifficulty = { viewModel.toggleDifficulty(it) },
+                onReset = { viewModel.resetFilters() },
+                onApply = {
+                    viewModel.applyFilters()
+                    scope.launch { sheetState.hide() }
+                        .invokeOnCompletion { showFilterSheet = false }
+                },
+                onClose = { showFilterSheet = false }
+            )
         }
     }
 }
