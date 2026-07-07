@@ -10,6 +10,7 @@ import com.kira.kmp.model.request.LogoutRequest
 import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,9 +47,12 @@ class ProfileViewModel(
                 }
             } catch (e: Exception) {
                 _profileUiState.update { it.copy(isLoading = false) }
-                if (_profileUiState.value.profile == null) {
+                val cachedProfile = userUseCase.userProfileFlow.first()
+                if (cachedProfile == null) {
                     val errorMessage = networkUtils.parseNetworkError(e)
                     _profileUiState.update { it.copy(error = errorMessage) }
+                } else {
+                    println("📡 Network sync failed, but profile cache exists. Suppressing error snackbar.")
                 }
             }
         }
