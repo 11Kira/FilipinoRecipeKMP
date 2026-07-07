@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +43,8 @@ fun RecipeListScreen(
         confirmValueChange = { newValue -> newValue != SheetValue.Hidden })
     val recipes = viewModel.recipePagingFlow.collectAsLazyPagingItems()
     val refreshState = recipes.loadState.refresh
+    val isRefreshing = refreshState is LoadState.Loading
+
     LaunchedEffect(recipes.loadState.append) {
         val append = recipes.loadState.append
         if (append is LoadState.Error) {
@@ -50,42 +53,57 @@ fun RecipeListScreen(
     }
     val query by viewModel.searchQuery.collectAsState()
     var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
+    var hasShownOfflineSnackbar by rememberSaveable { mutableStateOf(false) }
     val selectedProteins by viewModel.selectedProteins.collectAsState()
     val selectedDifficulties by viewModel.selectedDifficulties.collectAsState()
     val appliedFilterCount by viewModel.appliedFilterCount.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(refreshState) {
-        if (refreshState is LoadState.NotLoading && recipes.itemCount > 0) {
-            if (query != lastScrolledQuery) {
-                listState.scrollToItem(0)
-                lastScrolledQuery = query
+        when (refreshState) {
+            is LoadState.NotLoading -> {
+                hasShownOfflineSnackbar = false // Clean up error tracking flags
+                if (recipes.itemCount > 0 && query != lastScrolledQuery) {
+                    listState.scrollToItem(0)
+                    lastScrolledQuery = query
+                }
+            }
+
+            is LoadState.Error -> {
+                if (recipes.itemCount > 0 && !hasShownOfflineSnackbar) {
+                    onShowSnackbar("Offline mode: Displaying cached recipes.")
+                    hasShownOfflineSnackbar = true
+                }
+            }
+
+            is LoadState.Loading -> {
+                hasShownOfflineSnackbar = false
             }
         }
     }
-    LaunchedEffect(refreshState) {
-        if (refreshState is LoadState.Error && recipes.itemCount > 0) {
-            onShowSnackbar("Offline mode: Displaying cached recipes.")
-        }
-    }
 
-    RecipeBaseScreen(
-        recipes = recipes,
-        query = query,
-        onQueryChange = { viewModel.onSearchQueryChanged(it) },
-        onItemClick = onItemClick,
-        contentPadding = contentPadding,
-        searchHint = "Search recipes...",
-        actionSlot = {
-            RecipeFilter(
-                onButtonClick = {
-                    viewModel.syncSelectedWithApplied()
-                    showFilterSheet = true
-                },
-                appliedFilterCount = appliedFilterCount
-            )
-        }
-    )
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { recipes.refresh() }
+    ) {
+        RecipeBaseScreen(
+            recipes = recipes,
+            query = query,
+            onQueryChange = { viewModel.onSearchQueryChanged(it) },
+            onItemClick = onItemClick,
+            contentPadding = contentPadding,
+            searchHint = "Search recipes...",
+            actionSlot = {
+                RecipeFilter(
+                    onButtonClick = {
+                        viewModel.syncSelectedWithApplied()
+                        showFilterSheet = true
+                    },
+                    appliedFilterCount = appliedFilterCount
+                )
+            }
+        )
+    }
 
     if (showFilterSheet) {
         ModalBottomSheet(
