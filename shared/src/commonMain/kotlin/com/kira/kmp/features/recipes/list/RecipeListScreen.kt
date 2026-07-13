@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.ui.component.FilterSheetContent
 import com.kira.kmp.ui.component.recipe.RecipeBaseScreen
 import com.kira.kmp.ui.component.recipe.RecipeFilter
@@ -34,7 +35,8 @@ fun RecipeListScreen(
     contentPadding: PaddingValues,
     onItemClick: (String) -> Unit,
     onShowSnackbar: (String) -> Unit,
-    viewModel: RecipeListViewModel = koinViewModel()
+    viewModel: RecipeListViewModel = koinViewModel(),
+    mainViewModel: MainViewModel,
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -43,7 +45,8 @@ fun RecipeListScreen(
         confirmValueChange = { newValue -> newValue != SheetValue.Hidden })
     val recipes = viewModel.recipePagingFlow.collectAsLazyPagingItems()
     val refreshState = recipes.loadState.refresh
-    val isRefreshing = refreshState is LoadState.Loading
+    var isManualRefresh by remember { mutableStateOf(false) }
+    val isRefreshing = refreshState is LoadState.Loading && isManualRefresh
 
     LaunchedEffect(recipes.loadState.append) {
         val append = recipes.loadState.append
@@ -62,7 +65,7 @@ fun RecipeListScreen(
     LaunchedEffect(refreshState) {
         when (refreshState) {
             is LoadState.NotLoading -> {
-                hasShownOfflineSnackbar = false // Clean up error tracking flags
+                hasShownOfflineSnackbar = false
                 if (recipes.itemCount > 0 && query != lastScrolledQuery) {
                     listState.scrollToItem(0)
                     lastScrolledQuery = query
@@ -84,11 +87,17 @@ fun RecipeListScreen(
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = { recipes.refresh() }
+        onRefresh = {
+            isManualRefresh = true
+            recipes.refresh()
+        }
     ) {
         RecipeBaseScreen(
             recipes = recipes,
             query = query,
+            listState = listState,
+            mainViewModel = mainViewModel,
+            screenLabel = "Recipes",
             onQueryChange = { viewModel.onSearchQueryChanged(it) },
             onItemClick = onItemClick,
             contentPadding = contentPadding,
