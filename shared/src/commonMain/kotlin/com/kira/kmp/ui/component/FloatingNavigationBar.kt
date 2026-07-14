@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -31,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -48,8 +46,7 @@ fun FloatingBottomNavigation(
     navController: NavController,
     viewModel: MainViewModel,
     snackbarHostState: SnackbarHostState,
-    currentDestination: String?, // Should be the full route name or a string identifier
-    onReselect: () -> Unit
+    currentDestination: String?,
 ) {
     val scope = rememberCoroutineScope()
     val screens = listOf(BottomMenuItem.Recipes, BottomMenuItem.Favorites, BottomMenuItem.Profile)
@@ -65,8 +62,7 @@ fun FloatingBottomNavigation(
                         Spring.StiffnessLow
                     )
                 })
-        },
-        label = "NavMorph"
+        }
     ) { expanded ->
         Box(
             modifier = Modifier
@@ -78,7 +74,6 @@ fun FloatingBottomNavigation(
             contentAlignment = Alignment.Center
         ) {
             if (!expanded) {
-                // COLLAPSED: Single Icon
                 val active =
                     screens.find { it.label == currentDestination } ?: BottomMenuItem.Recipes
                 Icon(
@@ -88,7 +83,6 @@ fun FloatingBottomNavigation(
                     modifier = Modifier.size(26.dp)
                 )
             } else {
-                // EXPANDED: Row with Icon + Text
                 Row(
                     modifier = Modifier.width(290.dp).fillMaxHeight(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -96,28 +90,28 @@ fun FloatingBottomNavigation(
                 ) {
                     screens.forEach { item ->
                         val isSelected = item.label == currentDestination
-                        val color =
-                            if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+                        val tint =
+                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                alpha = 0.6f
+                            )
 
                         Column(
                             Modifier.weight(1f).fillMaxHeight().clickable {
-                                // 1. Auth check
-                                if ((item.route::class == FavoritesRoute::class || item.route::class == ProfileRoute::class) && !viewModel.isLoggedIn()) {
+                                val isRestricted =
+                                    (item.route::class == FavoritesRoute::class || item.route::class == ProfileRoute::class)
+                                if (isRestricted && !viewModel.isLoggedIn()) {
                                     scope.launch {
-                                        val result = snackbarHostState.showSnackbar(
-                                            message = "Sign in to access this feature",
-                                            actionLabel = "Sign In",
-                                            duration = SnackbarDuration.Short
-                                        )
-                                        if (result == SnackbarResult.ActionPerformed) {
+                                        if (snackbarHostState.showSnackbar(
+                                                "Sign in to access this feature",
+                                                "Sign In"
+                                            ) == SnackbarResult.ActionPerformed
+                                        ) {
                                             navController.navigate(LoginRoute)
                                         }
                                     }
                                     return@clickable
                                 }
-                                // 2. Navigation or Scroll
                                 if (isSelected) {
-                                    onReselect()
                                     viewModel.triggerScrollToTop(item.label)
                                 } else {
                                     navController.navigate(item.route) {
@@ -134,16 +128,14 @@ fun FloatingBottomNavigation(
                         ) {
                             Icon(
                                 vectorResource(item.icon),
-                                contentDescription = item.label,
-                                tint = color,
+                                item.label,
+                                tint = tint,
                                 modifier = Modifier.size(22.dp)
                             )
-                            // LABEL: Only visible when expanded
                             Text(
-                                text = item.label,
-                                color = color,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                item.label,
+                                color = tint,
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
                     }

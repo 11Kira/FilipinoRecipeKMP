@@ -98,8 +98,8 @@ fun MainScreenView(viewModel: MainViewModel) {
                         navController = navController,
                         viewModel = viewModel,
                         snackbarHostState = snackbarHostState,
-                        currentDestination = currentTabLabel,
-                        {})
+                        currentDestination = currentTabLabel
+                    )
                 }
             }
         }
