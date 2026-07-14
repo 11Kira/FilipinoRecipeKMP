@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -34,6 +35,13 @@ fun FavoriteRecipeListScreen(
     val isRefreshing = refreshState is LoadState.Loading && isManualRefresh
     val query by viewModel.searchQuery.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                if (offset == 0) mainViewModel.isBottomNavExpanded = true
+            }
+    }
 
     LaunchedEffect(refreshState) {
         if (refreshState is LoadState.NotLoading || refreshState is LoadState.Error) {

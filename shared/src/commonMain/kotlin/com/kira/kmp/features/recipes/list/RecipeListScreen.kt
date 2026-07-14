@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -61,6 +62,13 @@ fun RecipeListScreen(
     val selectedDifficulties by viewModel.selectedDifficulties.collectAsState()
     val appliedFilterCount by viewModel.appliedFilterCount.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                if (offset == 0) mainViewModel.isBottomNavExpanded = true
+            }
+    }
 
     LaunchedEffect(refreshState) {
         when (refreshState) {

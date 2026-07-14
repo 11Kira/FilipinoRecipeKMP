@@ -1,13 +1,11 @@
 package com.kira.kmp
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,20 +19,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -44,6 +38,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kira.kmp.ui.MainViewModel
+import com.kira.kmp.ui.component.FloatingBottomNavigation
 import com.kira.kmp.ui.navigation.AppNavHost
 import com.kira.kmp.ui.navigation.BottomMenuItem
 import com.kira.kmp.ui.navigation.DetailScreenRoute
@@ -76,38 +71,56 @@ fun MainScreenView(viewModel: MainViewModel) {
             currentDestination?.hasRoute<ForgotPasswordRoute>() == true
     val shouldShowBottomBar = !isDetailScreen && !isAuthScreen
     val snackbarHostState = remember { SnackbarHostState() }
+    val routeName = currentDestination?.route?.split(".")?.lastOrNull() // Logic to get current name
+    val shouldShow = !(currentDestination?.hasRoute<DetailScreenRoute>() == true ||
+            currentDestination?.hasRoute<LoginRoute>() == true ||
+            currentDestination?.hasRoute<RegisterRoute>() == true)
     val scope = rememberCoroutineScope()
-    var isBottomBarVisibleByScroll by remember { mutableStateOf(true) }
-
-    LaunchedEffect(currentDestination) {
-        isBottomBarVisibleByScroll = true
-    }
-
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                val delta = available.y
-                if (delta < -15f) {
-                    isBottomBarVisibleByScroll = false
-                } else if (delta > 15f) {
-                    isBottomBarVisibleByScroll = true
-                }
+                if (available.y < -10f) viewModel.isBottomNavExpanded = false
+                else if (available.y > 10f) viewModel.isBottomNavExpanded = true
                 return Offset.Zero
-            }
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ): Offset {
-                if (available.y < 0 && consumed.y == 0f) {
-                    isBottomBarVisibleByScroll = true
-                }
-                return super.onPostScroll(consumed, available, source)
             }
         }
     }
+
     Scaffold(
+        modifier = Modifier.nestedScroll(nestedScrollConnection),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { contentPadding ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            AppNavHost(
+                viewModel,
+                navController,
+                contentPadding,
+                onShowSnackbar = { message, actionLabel, action ->
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = message,
+                            actionLabel = actionLabel,
+                            duration = SnackbarDuration.Short
+                        )
+                        if (result == SnackbarResult.ActionPerformed) action?.invoke()
+                    }
+                }
+            )
+
+            if (shouldShow) {
+                Box(modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp)) {
+                    FloatingBottomNavigation(
+                        navController,
+                        viewModel,
+                        snackbarHostState,
+                        currentDestination?.route,
+                        {})
+                }
+            }
+        }
+    }
+
+    /*Scaffold(
         modifier = Modifier.nestedScroll(nestedScrollConnection),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
@@ -149,7 +162,7 @@ fun MainScreenView(viewModel: MainViewModel) {
                 }
             }
         )
-    }
+    }*/
 }
 
 @Composable
