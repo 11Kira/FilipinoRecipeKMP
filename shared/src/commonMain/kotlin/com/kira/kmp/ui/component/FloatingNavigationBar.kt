@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -101,11 +102,13 @@ fun FloatingBottomNavigation(
                                     (item.route::class == FavoritesRoute::class || item.route::class == ProfileRoute::class)
                                 if (isRestricted && !viewModel.isLoggedIn()) {
                                     scope.launch {
-                                        if (snackbarHostState.showSnackbar(
-                                                "Sign in to access this feature",
-                                                "Sign In"
-                                            ) == SnackbarResult.ActionPerformed
-                                        ) {
+                                        snackbarHostState.currentSnackbarData?.dismiss()
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "Sign in to access this feature",
+                                            actionLabel = "Sign In",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        if (result == SnackbarResult.ActionPerformed) {
                                             navController.navigate(LoginRoute)
                                         }
                                     }
