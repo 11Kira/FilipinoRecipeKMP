@@ -21,14 +21,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -45,7 +48,7 @@ fun FloatingBottomNavigation(
     navController: NavController,
     viewModel: MainViewModel,
     snackbarHostState: SnackbarHostState,
-    currentDestination: String?,
+    currentDestination: String?, // Should be the full route name or a string identifier
     onReselect: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -75,6 +78,7 @@ fun FloatingBottomNavigation(
             contentAlignment = Alignment.Center
         ) {
             if (!expanded) {
+                // COLLAPSED: Single Icon
                 val active =
                     screens.find { it.label == currentDestination } ?: BottomMenuItem.Recipes
                 Icon(
@@ -84,35 +88,45 @@ fun FloatingBottomNavigation(
                     modifier = Modifier.size(26.dp)
                 )
             } else {
+                // EXPANDED: Row with Icon + Text
                 Row(
                     modifier = Modifier.width(290.dp).fillMaxHeight(),
-                    Arrangement.SpaceEvenly,
-                    Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     screens.forEach { item ->
                         val isSelected = item.label == currentDestination
+                        val color =
+                            if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+
                         Column(
-                            Modifier.weight(1f).clickable {
-                                if (item.route::class == FavoritesRoute::class || item.route::class == ProfileRoute::class) {
-                                    if (!viewModel.isLoggedIn()) {
-                                        scope.launch {
-                                            if (snackbarHostState.showSnackbar(
-                                                    "Sign in to access this feature",
-                                                    "Sign In"
-                                                ) == SnackbarResult.ActionPerformed
-                                            ) {
-                                                navController.navigate(LoginRoute)
-                                            }
+                            Modifier.weight(1f).fillMaxHeight().clickable {
+                                // 1. Auth check
+                                if ((item.route::class == FavoritesRoute::class || item.route::class == ProfileRoute::class) && !viewModel.isLoggedIn()) {
+                                    scope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "Sign in to access this feature",
+                                            actionLabel = "Sign In",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        if (result == SnackbarResult.ActionPerformed) {
+                                            navController.navigate(LoginRoute)
                                         }
-                                        return@clickable
                                     }
+                                    return@clickable
                                 }
+                                // 2. Navigation or Scroll
                                 if (isSelected) {
-                                    viewModel.triggerScrollToTop(item.label); onReselect()
-                                } else navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }; launchSingleTop = true; restoreState = true
+                                    onReselect()
+                                    viewModel.triggerScrollToTop(item.label)
+                                } else {
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
                             },
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -120,9 +134,16 @@ fun FloatingBottomNavigation(
                         ) {
                             Icon(
                                 vectorResource(item.icon),
-                                item.label,
-                                tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+                                contentDescription = item.label,
+                                tint = color,
                                 modifier = Modifier.size(22.dp)
+                            )
+                            // LABEL: Only visible when expanded
+                            Text(
+                                text = item.label,
+                                color = color,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }
