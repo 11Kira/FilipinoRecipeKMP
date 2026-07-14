@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,20 +29,22 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.kira.kmp.model.Recipe
+import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.utils.ColorUtils
 
 @Composable
 fun RecipeBaseScreen(
     recipes: LazyPagingItems<Recipe>,
     query: String,
+    listState: LazyListState,
+    mainViewModel: MainViewModel,
+    screenLabel: String,
     onQueryChange: (String) -> Unit,
     onItemClick: (String) -> Unit,
     contentPadding: PaddingValues,
     searchHint: String,
     actionSlot: @Composable (RowScope.() -> Unit)? = null,
 ) {
-
-    val listState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
     val refreshState = recipes.loadState.refresh
@@ -53,6 +55,14 @@ fun RecipeBaseScreen(
             if (query != lastScrolledQuery) {
                 listState.scrollToItem(0)
                 lastScrolledQuery = query
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        mainViewModel.scrollToTopEvent.collect { targetTab ->
+            if (targetTab == screenLabel) {
+                listState.animateScrollToItem(index = 0)
             }
         }
     }

@@ -13,9 +13,11 @@ import com.kira.kmp.features.account.profile.ProfileScreen
 import com.kira.kmp.features.recipes.details.RecipeDetailsScreen
 import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListScreen
 import com.kira.kmp.features.recipes.list.RecipeListScreen
+import com.kira.kmp.ui.MainViewModel
 
 @Composable
 fun AppNavHost(
+    mainViewModel: MainViewModel,
     navController: NavHostController,
     contentPadding: PaddingValues,
     onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit
@@ -38,6 +40,7 @@ fun AppNavHost(
         }
         composable<RecipeListRoute> {
             RecipeListScreen(
+                mainViewModel = mainViewModel,
                 contentPadding = contentPadding,
                 onItemClick = { id ->
                     navController.navigate(DetailScreenRoute(id))
@@ -48,11 +51,11 @@ fun AppNavHost(
 
         composable<FavoritesRoute> {
             FavoriteRecipeListScreen(
+                mainViewModel = mainViewModel,
                 contentPadding = contentPadding,
                 onItemClick = { id ->
                     navController.navigate(DetailScreenRoute(id))
-                },
-                onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
+                }
             )
         }
 
