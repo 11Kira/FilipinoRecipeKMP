@@ -67,7 +67,6 @@ import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.navigation.ForgotPasswordRoute
 import com.kira.kmp.ui.navigation.LoginRoute
-import com.kira.kmp.ui.navigation.RecipeListRoute
 import com.kira.kmp.ui.navigation.RegisterRoute
 import com.kira.kmp.utils.ColorUtils
 import filipinorecipekmp.shared.generated.resources.Res
@@ -77,6 +76,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
+    onLoginSuccess: () -> Unit,
     navController: NavController,
     onShowSnackbar: (String) -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
@@ -87,9 +87,7 @@ fun LoginScreen(
             viewModel.loginState.collect { state ->
                 when (state) {
                     is LoginState.OnLogin -> {
-                        navController.navigate(RecipeListRoute) {
-                            popUpTo(LoginRoute) { inclusive = true }
-                        }
+                        onLoginSuccess()
                     }
 
                     is LoginState.ShowError -> {

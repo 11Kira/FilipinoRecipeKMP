@@ -17,6 +17,7 @@ import com.kira.kmp.features.recipes.list.RecipeListScreen
 
 @Composable
 fun AppNavHost(
+    initialRoute: Any,
     mainViewModel: MainViewModel,
     navController: NavHostController,
     contentPadding: PaddingValues,
@@ -24,10 +25,16 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = RecipeListRoute
+        startDestination = initialRoute
     ) {
         composable<LoginRoute> {
             LoginScreen(
+                onLoginSuccess = {
+                    mainViewModel.refreshSession()
+                    navController.navigate(RecipeListRoute) {
+                        popUpTo(LoginRoute) { inclusive = true }
+                    }
+                },
                 navController = navController,
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
@@ -63,6 +70,7 @@ fun AppNavHost(
             ProfileScreen(
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
                 onLogoutNavigate = {
+                    mainViewModel.refreshSession()
                     navController.navigate(RecipeListRoute) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
