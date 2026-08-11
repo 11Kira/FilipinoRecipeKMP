@@ -10,10 +10,10 @@ import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordScreen
 import com.kira.kmp.features.account.auth.login.LoginScreen
 import com.kira.kmp.features.account.auth.register.RegisterScreen
 import com.kira.kmp.features.account.profile.ProfileScreen
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.features.recipes.details.RecipeDetailsScreen
 import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListScreen
 import com.kira.kmp.features.recipes.list.RecipeListScreen
-import com.kira.kmp.ui.MainViewModel
 
 @Composable
 fun AppNavHost(
@@ -28,12 +28,24 @@ fun AppNavHost(
     ) {
         composable<LoginRoute> {
             LoginScreen(
+                onLoginSuccess = {
+                    mainViewModel.refreshSession()
+                    navController.navigate(RecipeListRoute) {
+                        popUpTo(LoginRoute) { inclusive = true }
+                    }
+                },
                 navController = navController,
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
         }
         composable<RegisterRoute> {
             RegisterScreen(
+                onRegisterSuccess = {
+                    mainViewModel.refreshSession()
+                    navController.navigate(RecipeListRoute) {
+                        popUpTo(LoginRoute) { inclusive = true }
+                    }
+                },
                 navController = navController,
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )
@@ -63,6 +75,7 @@ fun AppNavHost(
             ProfileScreen(
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
                 onLogoutNavigate = {
+                    mainViewModel.refreshSession()
                     navController.navigate(RecipeListRoute) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
@@ -74,6 +87,7 @@ fun AppNavHost(
         composable<DetailScreenRoute> { backStackEntry ->
             val args = backStackEntry.toRoute<DetailScreenRoute>()
             RecipeDetailsScreen(
+                mainViewModel = mainViewModel,
                 id = args.id,
                 onShowSnackbar = onShowSnackbar,
                 onBackClick = {

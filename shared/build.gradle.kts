@@ -43,6 +43,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
             implementation(libs.androidx.security.crypto)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.tink.android)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -73,6 +75,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.paging)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.androidx.datastore.preferences.core)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

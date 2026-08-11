@@ -74,6 +74,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
     navController: NavController,
     onShowSnackbar: (String) -> Unit,
     viewModel: RegisterViewModel = koinViewModel(),
@@ -84,10 +85,7 @@ fun RegisterScreen(
             viewModel.registerState.collect { state ->
                 when (state) {
                     is RegisterState.OnRegister -> {
-                        onShowSnackbar("Account created! Please sign in.")
-                        navController.navigate(LoginRoute) {
-                            popUpTo(RegisterRoute) { inclusive = true }
-                        }
+                        onRegisterSuccess()
                     }
 
                     is RegisterState.ShowError -> {

@@ -1,4 +1,4 @@
-package com.kira.kmp.data.local.user
+package com.kira.kmp.data.local.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,9 +1,9 @@
 package com.kira.kmp.data.remote
 
 import com.kira.kmp.data.local.TokenManager
-import com.kira.kmp.model.Token
 import com.kira.kmp.model.request.RefreshRequest
 import com.kira.kmp.model.response.ApiResponse
+import com.kira.kmp.model.response.RefreshTokenResponse
 import com.kira.kmp.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -62,22 +62,25 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
                 }
 
                 refreshTokens {
-                    val oldRefreshToken = oldTokens?.refreshToken
-                    if (oldRefreshToken.isNullOrBlank()) return@refreshTokens null
+                    val oldRefreshToken = oldTokens?.refreshToken ?: tokenManager.getRefreshToken()
+                    if (oldRefreshToken.isNullOrBlank()) {
+                        tokenManager.clearTokens()
+                        return@refreshTokens null
+                    }
                     try {
-                        // IMPORTANT: Use a 'client' instance that does NOT have the Auth plugin installed
-                        // to avoid infinite loops, or use the current 'client' (Ktor handles this safely)
                         val response = client.post("auth/refresh") {
-                            // Force this request to NOT use the Auth plugin so we don't loop
                             markAsRefreshTokenRequest()
                             contentType(ContentType.Application.Json)
                             setBody(RefreshRequest(oldRefreshToken))
-                        }.body<ApiResponse<Token>>()
+                        }.body<ApiResponse<RefreshTokenResponse>>()
 
-                        val tokens = response.data
-                        if (tokens != null) {
-                            tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                            BearerTokens(tokens.accessToken, tokens.refreshToken)
+                        val refreshData = response.data
+                        if (refreshData != null) {
+                            tokenManager.saveTokens(
+                                accessToken = refreshData.accessToken,
+                                refreshToken = oldRefreshToken,
+                            )
+                            BearerTokens(refreshData.accessToken, oldRefreshToken)
                         } else {
                             tokenManager.clearTokens()
                             null
@@ -89,9 +92,7 @@ fun createHttpClient(tokenManager: TokenManager): HttpClient {
                 }
 
                 sendWithoutRequest { request ->
-                    val path = request.url.encodedPath
-                    val isLoggedIn = tokenManager.getAccessToken() != null
-                    !path.contains("auth/") && isLoggedIn
+                    !request.url.encodedPath.contains("auth/")
                 }
             }
         }

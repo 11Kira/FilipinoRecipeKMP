@@ -26,6 +26,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.kira.kmp.ui.MainViewModel
+import com.kira.kmp.features.main.AppStartState
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.ui.navigation.BottomMenuItem
 import com.kira.kmp.ui.navigation.FavoritesRoute
 import com.kira.kmp.ui.navigation.LoginRoute
@@ -52,6 +55,7 @@ fun FloatingBottomNavigation(
     val scope = rememberCoroutineScope()
     val screens = listOf(BottomMenuItem.Recipes, BottomMenuItem.Favorites, BottomMenuItem.Profile)
     val isExpanded = viewModel.isBottomNavExpanded
+    val startState by viewModel.startState.collectAsState()
 
     AnimatedContent(
         targetState = isExpanded,
@@ -100,7 +104,7 @@ fun FloatingBottomNavigation(
                             Modifier.weight(1f).fillMaxHeight().clickable {
                                 val isRestricted =
                                     (item.route::class == FavoritesRoute::class || item.route::class == ProfileRoute::class)
-                                if (isRestricted && !viewModel.isLoggedIn()) {
+                                if (isRestricted && startState is AppStartState.Unauthenticated) {
                                     scope.launch {
                                         snackbarHostState.currentSnackbarData?.dismiss()
                                         val result = snackbarHostState.showSnackbar(

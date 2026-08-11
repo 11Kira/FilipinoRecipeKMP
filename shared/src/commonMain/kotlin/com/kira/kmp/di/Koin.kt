@@ -1,11 +1,11 @@
 package com.kira.kmp.di
 
-import com.kira.kmp.data.local.AppDatabase
 import com.kira.kmp.data.local.TokenManager
-import com.kira.kmp.data.remote.AuthService
-import com.kira.kmp.data.remote.RecipeService
-import com.kira.kmp.data.remote.UserService
+import com.kira.kmp.data.local.database.AppDatabase
 import com.kira.kmp.data.remote.createHttpClient
+import com.kira.kmp.data.remote.service.AuthService
+import com.kira.kmp.data.remote.service.RecipeService
+import com.kira.kmp.data.remote.service.UserService
 import com.kira.kmp.data.remote.source.AuthRemoteSource
 import com.kira.kmp.data.remote.source.RecipeRemoteSource
 import com.kira.kmp.data.remote.source.UserRemoteSource
@@ -19,16 +19,19 @@ import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
 import com.kira.kmp.features.account.auth.login.LoginViewModel
 import com.kira.kmp.features.account.auth.register.RegisterViewModel
 import com.kira.kmp.features.account.profile.ProfileViewModel
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.features.recipes.details.RecipeDetailsViewModel
 import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListViewModel
 import com.kira.kmp.features.recipes.list.RecipeListViewModel
-import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.utils.NetworkUtils
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+
+expect fun platformModule(): Module
 
 val dataModule = module {
     single { createHttpClient(get()) }
@@ -78,7 +81,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
             dataModule,
             useCaseModule,
             viewModelModule,
-            platformSettingsModule(),
+            platformModule(),
             platformDatabaseModule()
         )
     }

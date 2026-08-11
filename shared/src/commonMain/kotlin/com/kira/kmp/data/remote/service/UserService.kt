@@ -1,4 +1,4 @@
-package com.kira.kmp.data.remote
+package com.kira.kmp.data.remote.service
 
 import com.kira.kmp.model.Recipe
 import com.kira.kmp.model.User

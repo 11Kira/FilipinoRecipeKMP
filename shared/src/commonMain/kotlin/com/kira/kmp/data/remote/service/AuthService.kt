@@ -1,4 +1,4 @@
-package com.kira.kmp.data.remote
+package com.kira.kmp.data.remote.service
 
 import com.kira.kmp.model.Token
 import com.kira.kmp.model.request.ForgotPasswordRequest

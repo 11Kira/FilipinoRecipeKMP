@@ -1,4 +1,4 @@
-package com.kira.kmp.data.local
+package com.kira.kmp.data.local.database
 
 import android.content.Context
 import androidx.room.Room

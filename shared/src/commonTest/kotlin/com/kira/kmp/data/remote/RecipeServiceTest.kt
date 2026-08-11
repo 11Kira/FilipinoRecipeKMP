@@ -1,5 +1,6 @@
 package com.kira.kmp.data.remote
 
+import com.kira.kmp.data.remote.service.RecipeService
 import com.kira.kmp.model.enums.ResponseStatus
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

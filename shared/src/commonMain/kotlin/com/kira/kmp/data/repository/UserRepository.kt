@@ -3,9 +3,9 @@ package com.kira.kmp.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.kira.kmp.data.local.user.UserDao
-import com.kira.kmp.data.local.user.toDomain
-import com.kira.kmp.data.local.user.toEntity
+import com.kira.kmp.data.local.database.dao.UserDao
+import com.kira.kmp.data.local.database.entity.toDomain
+import com.kira.kmp.data.local.database.entity.toEntity
 import com.kira.kmp.data.remote.source.FavoriteRecipePagingSource
 import com.kira.kmp.data.remote.source.UserRemoteSource
 import com.kira.kmp.model.Recipe

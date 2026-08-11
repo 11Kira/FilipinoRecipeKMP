@@ -1,9 +1,12 @@
-package com.kira.kmp.data.local.recipe
+package com.kira.kmp.data.remote.mediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import com.kira.kmp.data.local.database.dao.RecipeDao
+import com.kira.kmp.data.local.database.entity.RecipeEntity
+import com.kira.kmp.data.local.database.entity.toEntity
 import com.kira.kmp.data.remote.source.RecipeRemoteSource
 import com.kira.kmp.model.enums.ResponseStatus
 

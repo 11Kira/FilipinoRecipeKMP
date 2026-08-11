@@ -9,7 +9,6 @@ import com.kira.kmp.model.Recipe
 import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.utils.NetworkUtils
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,9 +22,6 @@ class RecipeDetailsViewModel(
 
     private val _recipeDetailsUiState = MutableStateFlow(RecipeDetailsUiState())
     val recipeDetailsUiState = _recipeDetailsUiState.asStateFlow()
-
-    private val _isLoggedIn = MutableStateFlow(tokenManager.isLoggedIn())
-    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
     fun getRecipeById(recipeId: String) {
         if (_recipeDetailsUiState.value.recipe?.id == recipeId) return

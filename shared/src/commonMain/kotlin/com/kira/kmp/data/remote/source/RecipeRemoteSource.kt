@@ -1,6 +1,6 @@
 package com.kira.kmp.data.remote.source
 
-import com.kira.kmp.data.remote.RecipeService
+import com.kira.kmp.data.remote.service.RecipeService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
