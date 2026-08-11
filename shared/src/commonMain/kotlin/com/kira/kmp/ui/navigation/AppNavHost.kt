@@ -40,6 +40,12 @@ fun AppNavHost(
         }
         composable<RegisterRoute> {
             RegisterScreen(
+                onRegisterSuccess = {
+                    mainViewModel.refreshSession()
+                    navController.navigate(RecipeListRoute) {
+                        popUpTo(LoginRoute) { inclusive = true }
+                    }
+                },
                 navController = navController,
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) }
             )

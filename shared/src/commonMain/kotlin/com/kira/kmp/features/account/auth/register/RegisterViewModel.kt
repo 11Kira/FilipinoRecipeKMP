@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kira.kmp.data.local.TokenManager
 import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.model.request.RegisterRequest
 import com.kira.kmp.utils.NetworkUtils
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(
     private val authUseCase: AuthUseCase,
+    private val tokenManager: TokenManager,
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
     private val _registerState: MutableSharedFlow<RegisterState> = MutableSharedFlow()
@@ -43,8 +45,17 @@ class RegisterViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                authUseCase.register(RegisterRequest(email, password, username))
-                _registerState.emit(RegisterState.OnRegister)
+                val response = authUseCase.register(RegisterRequest(email, password, username))
+                val tokens = response.data
+                if (tokens != null) {
+                    tokenManager.saveTokens(
+                        tokens.accessToken,
+                        tokens.refreshToken
+                    )
+                    _registerState.emit(RegisterState.OnRegister)
+                } else {
+                    _registerState.emit(RegisterState.ShowError(Exception(response.message)))
+                }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
                 _registerState.emit(RegisterState.ShowError(Exception(errorMessage)))
