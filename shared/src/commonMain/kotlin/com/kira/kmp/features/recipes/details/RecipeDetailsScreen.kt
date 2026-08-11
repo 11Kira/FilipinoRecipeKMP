@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.kira.kmp.features.main.AppStartState
 import com.kira.kmp.model.Recipe
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.component.DetailsListSection
@@ -214,7 +215,8 @@ fun RecipeTopBar(
     onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
-    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+    val startState by viewModel.startState.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -249,7 +251,7 @@ fun RecipeTopBar(
                 icon = vectorResource(if (recipe.isFavorited) Res.drawable.ic_favorite_filled else Res.drawable.ic_favorite),
                 tint = if (recipe.isFavorited) Color.Red else Color.White,
                 onClick = {
-                    if (isLoggedIn) {
+                    if (startState is AppStartState.Authenticated) {
                         viewModel.toggleFavoriteRecipe(recipe.id)
                     } else {
                         onShowSnackbar(

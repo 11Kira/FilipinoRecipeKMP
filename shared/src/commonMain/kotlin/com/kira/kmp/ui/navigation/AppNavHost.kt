@@ -10,10 +10,10 @@ import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordScreen
 import com.kira.kmp.features.account.auth.login.LoginScreen
 import com.kira.kmp.features.account.auth.register.RegisterScreen
 import com.kira.kmp.features.account.profile.ProfileScreen
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.features.recipes.details.RecipeDetailsScreen
 import com.kira.kmp.features.recipes.favorites.FavoriteRecipeListScreen
 import com.kira.kmp.features.recipes.list.RecipeListScreen
-import com.kira.kmp.ui.MainViewModel
 
 @Composable
 fun AppNavHost(

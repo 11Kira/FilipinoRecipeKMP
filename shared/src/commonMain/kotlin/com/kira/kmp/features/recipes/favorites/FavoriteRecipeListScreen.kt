@@ -17,7 +17,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kira.kmp.ui.MainViewModel
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.ui.component.recipe.RecipeBaseScreen
 import org.koin.compose.viewmodel.koinViewModel
 

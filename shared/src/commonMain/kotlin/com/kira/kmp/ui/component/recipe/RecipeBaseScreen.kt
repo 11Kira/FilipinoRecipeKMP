@@ -28,8 +28,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.model.Recipe
-import com.kira.kmp.ui.MainViewModel
 import com.kira.kmp.utils.ColorUtils
 
 @Composable

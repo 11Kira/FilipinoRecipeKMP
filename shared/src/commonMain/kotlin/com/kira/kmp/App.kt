@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.kira.kmp.ui.MainViewModel
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.ui.component.FloatingBottomNavigation
 import com.kira.kmp.ui.navigation.AppNavHost
 import com.kira.kmp.ui.navigation.DetailScreenRoute

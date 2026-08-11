@@ -22,7 +22,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.kira.kmp.ui.MainViewModel
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.ui.component.FilterSheetContent
 import com.kira.kmp.ui.component.recipe.RecipeBaseScreen
 import com.kira.kmp.ui.component.recipe.RecipeFilter

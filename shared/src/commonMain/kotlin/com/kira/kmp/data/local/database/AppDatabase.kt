@@ -1,4 +1,4 @@
-package com.kira.kmp.data.local
+package com.kira.kmp.data.local.database
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.kira.kmp.data.local.Converters
 import com.kira.kmp.data.local.database.dao.RecipeDao
 import com.kira.kmp.data.local.database.dao.UserDao
 import com.kira.kmp.data.local.database.entity.RecipeEntity
