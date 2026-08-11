@@ -1,6 +1,6 @@
 package com.kira.kmp.data.remote.source
 
-import com.kira.kmp.data.remote.AuthService
+import com.kira.kmp.data.remote.service.AuthService
 import com.kira.kmp.model.request.LoginRequest
 import com.kira.kmp.model.request.LogoutRequest
 import com.kira.kmp.model.request.RegisterRequest

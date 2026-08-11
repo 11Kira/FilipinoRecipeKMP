@@ -6,10 +6,10 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.kira.kmp.data.local.recipe.RecipeDao
-import com.kira.kmp.data.local.recipe.RecipeEntity
-import com.kira.kmp.data.local.user.UserDao
-import com.kira.kmp.data.local.user.UserEntity
+import com.kira.kmp.data.local.database.dao.RecipeDao
+import com.kira.kmp.data.local.database.dao.UserDao
+import com.kira.kmp.data.local.database.entity.RecipeEntity
+import com.kira.kmp.data.local.database.entity.UserEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 

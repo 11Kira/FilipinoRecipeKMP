@@ -2,10 +2,10 @@ package com.kira.kmp.di
 
 import com.kira.kmp.data.local.AppDatabase
 import com.kira.kmp.data.local.TokenManager
-import com.kira.kmp.data.remote.AuthService
-import com.kira.kmp.data.remote.RecipeService
-import com.kira.kmp.data.remote.UserService
 import com.kira.kmp.data.remote.createHttpClient
+import com.kira.kmp.data.remote.service.AuthService
+import com.kira.kmp.data.remote.service.RecipeService
+import com.kira.kmp.data.remote.service.UserService
 import com.kira.kmp.data.remote.source.AuthRemoteSource
 import com.kira.kmp.data.remote.source.RecipeRemoteSource
 import com.kira.kmp.data.remote.source.UserRemoteSource

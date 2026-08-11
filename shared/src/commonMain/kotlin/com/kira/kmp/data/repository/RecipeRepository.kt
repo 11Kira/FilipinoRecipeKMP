@@ -5,10 +5,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.kira.kmp.data.local.recipe.RecipeDao
-import com.kira.kmp.data.local.recipe.RecipeRemoteMediator
-import com.kira.kmp.data.local.recipe.toDomain
-import com.kira.kmp.data.local.recipe.toEntity
+import com.kira.kmp.data.local.database.dao.RecipeDao
+import com.kira.kmp.data.local.database.entity.toDomain
+import com.kira.kmp.data.local.database.entity.toEntity
+import com.kira.kmp.data.remote.mediator.RecipeRemoteMediator
 import com.kira.kmp.data.remote.source.RecipeRemoteSource
 import com.kira.kmp.model.Recipe
 import com.kira.kmp.model.enums.ResponseStatus
