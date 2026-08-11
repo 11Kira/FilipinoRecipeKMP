@@ -94,17 +94,10 @@ fun App(viewModel: MainViewModel = koinViewModel()) {
 
                     is AppStartState.Authenticated,
                     is AppStartState.Unauthenticated -> {
-                        val initialRoute = if (startState is AppStartState.Authenticated) {
-                            RecipeListRoute
-                        } else {
-                            LoginRoute
-                        }
-
                         AppNavHost(
-                            initialRoute,
-                            viewModel,
-                            navController,
-                            contentPadding,
+                            mainViewModel = viewModel,
+                            navController = navController,
+                            contentPadding = contentPadding,
                             onShowSnackbar = { message, actionLabel, action ->
                                 scope.launch {
                                     val result = snackbarHostState.showSnackbar(

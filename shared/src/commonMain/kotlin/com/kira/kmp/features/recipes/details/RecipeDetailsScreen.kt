@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.kira.kmp.features.main.AppStartState
+import com.kira.kmp.features.main.MainViewModel
 import com.kira.kmp.model.Recipe
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.component.DetailsListSection
@@ -61,7 +62,8 @@ fun RecipeDetailsScreen(
     onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
     onBackClick: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    viewModel: RecipeDetailsViewModel = koinViewModel()
+    viewModel: RecipeDetailsViewModel = koinViewModel(),
+    mainViewModel: MainViewModel
 ) {
     val uiState by viewModel.recipeDetailsUiState.collectAsStateWithLifecycle()
 
@@ -79,6 +81,7 @@ fun RecipeDetailsScreen(
         uiState.recipe?.let { recipe ->
             PopulateRecipeDetails(
                 viewModel = viewModel,
+                mainViewModel = mainViewModel,
                 recipe = recipe,
                 onBackClick = onBackClick,
                 onShowSnackbar = onShowSnackbar,
@@ -95,6 +98,7 @@ fun RecipeDetailsScreen(
 @Composable
 fun PopulateRecipeDetails(
     viewModel: RecipeDetailsViewModel,
+    mainViewModel: MainViewModel,
     recipe: Recipe,
     onBackClick: () -> Unit,
     onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
@@ -135,6 +139,7 @@ fun PopulateRecipeDetails(
 
         RecipeTopBar(
             viewModel = viewModel,
+            mainViewModel = mainViewModel,
             alpha = toolbarAlpha,
             recipe = recipe,
             onBackClick = onBackClick,
@@ -209,14 +214,14 @@ fun RecipeHeaderImage(
 @Composable
 fun RecipeTopBar(
     viewModel: RecipeDetailsViewModel,
+    mainViewModel: MainViewModel,
     alpha: Float,
     recipe: Recipe,
     onBackClick: () -> Unit,
     onShowSnackbar: (String, String?, (() -> Unit)?) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
-    val startState by viewModel.startState.collectAsState()
-
+    val startState by mainViewModel.startState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxWidth()

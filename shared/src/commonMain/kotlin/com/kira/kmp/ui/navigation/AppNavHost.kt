@@ -17,7 +17,6 @@ import com.kira.kmp.features.recipes.list.RecipeListScreen
 
 @Composable
 fun AppNavHost(
-    initialRoute: Any,
     mainViewModel: MainViewModel,
     navController: NavHostController,
     contentPadding: PaddingValues,
@@ -25,7 +24,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = initialRoute
+        startDestination = RecipeListRoute
     ) {
         composable<LoginRoute> {
             LoginScreen(
@@ -82,6 +81,7 @@ fun AppNavHost(
         composable<DetailScreenRoute> { backStackEntry ->
             val args = backStackEntry.toRoute<DetailScreenRoute>()
             RecipeDetailsScreen(
+                mainViewModel = mainViewModel,
                 id = args.id,
                 onShowSnackbar = onShowSnackbar,
                 onBackClick = {
