@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
@@ -40,7 +41,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EmailStepContent(
-    onNext: (String) -> Unit,
+    isLoading: Boolean,
     onBack: () -> Unit,
     viewModel: ForgotPasswordViewModel = koinViewModel()
 ) {
@@ -62,16 +63,15 @@ fun EmailStepContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
         BasicTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                viewModel.updateEmail(it)
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            value = viewModel.email,
+            onValueChange = { viewModel.updateEmail(it) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Done
+            ),
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    onNext(email.trim())
                 }
             ),
             modifier = Modifier.height(50.dp),
@@ -95,7 +95,7 @@ fun EmailStepContent(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(modifier = Modifier.weight(1f)) {
-                        if (email.isEmpty()) {
+                        if (viewModel.email.isEmpty()) {
                             Text("Email address", color = Color.Gray)
                         }
                         innerTextField()
@@ -106,7 +106,7 @@ fun EmailStepContent(
 
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { onNext(email.trim()) },
+            onClick = { viewModel.requestOtp() },
             enabled = viewModel.isEmailValid,
             modifier = Modifier
                 .fillMaxWidth()

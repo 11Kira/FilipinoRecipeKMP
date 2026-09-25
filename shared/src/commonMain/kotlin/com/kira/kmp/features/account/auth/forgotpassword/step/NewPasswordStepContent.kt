@@ -41,12 +41,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NewPasswordStepContent(
-    onReset: (String) -> Unit,
-    viewModel: ForgotPasswordViewModel = koinViewModel(),
+    isLoading: Boolean,
+    onBack: () -> Unit,
+    viewModel: ForgotPasswordViewModel,
 ) {
     val passwordState = rememberTextFieldState()
     val confirmPasswordState = rememberTextFieldState()
@@ -136,7 +136,6 @@ fun NewPasswordStepContent(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             onKeyboardAction = {
                 keyboardController?.hide()
-                if (passwordsMatch) onReset(passwordState.text.toString())
             },
             modifier = Modifier.height(50.dp),
             decorator = { innerTextField ->
@@ -181,8 +180,8 @@ fun NewPasswordStepContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { if (passwordsMatch) onReset(passwordState.text.toString()) },
-            enabled = viewModel.isPasswordValid,
+            onClick = { viewModel.completeReset() },
+            enabled = !isLoading && viewModel.isPasswordValid,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

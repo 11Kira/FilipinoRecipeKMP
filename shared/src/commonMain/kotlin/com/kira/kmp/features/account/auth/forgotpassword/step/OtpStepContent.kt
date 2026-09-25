@@ -35,12 +35,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
 
 @Composable
 fun OtpStepContent(
     email: String,
-    onVerify: (String) -> Unit,
-    onBack: () -> Unit
+    isLoading: Boolean,
+    onBack: () -> Unit,
+    viewModel: ForgotPasswordViewModel
 ) {
     var otpCode by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -60,13 +62,12 @@ fun OtpStepContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
         BasicTextField(
-            value = otpCode,
-            onValueChange = { if (it.length <= 6) otpCode = it },
+            value = viewModel.otpCode,
+            onValueChange = { viewModel.updateOtp(it) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    onVerify(otpCode.trim())
                 }
             ),
             modifier = Modifier.height(50.dp),
@@ -105,7 +106,7 @@ fun OtpStepContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { onVerify(otpCode.trim()) },
+            onClick = { viewModel.verifyOtp() },
             enabled = otpCode.length == 6,
             modifier = Modifier
                 .fillMaxWidth()
