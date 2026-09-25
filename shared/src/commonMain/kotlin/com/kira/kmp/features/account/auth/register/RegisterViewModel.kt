@@ -9,10 +9,12 @@ import com.kira.kmp.data.local.TokenManager
 import com.kira.kmp.domain.usecase.AuthUseCase
 import com.kira.kmp.model.request.RegisterRequest
 import com.kira.kmp.utils.NetworkUtils
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
@@ -20,12 +22,11 @@ class RegisterViewModel(
     private val tokenManager: TokenManager,
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
-    private val _registerState: MutableSharedFlow<RegisterState> = MutableSharedFlow()
-    val registerState
-        get() = _registerState.asSharedFlow()
+    private val _uiState = MutableStateFlow(RegisterUiState())
+    val uiState = _uiState.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
+    private val _registerEffect = Channel<RegisterUiEffect>(Channel.BUFFERED)
+    val registerEffect: Flow<RegisterUiEffect> = _registerEffect.receiveAsFlow()
 
     var username by mutableStateOf("")
     var email by mutableStateOf("")
@@ -41,9 +42,9 @@ class RegisterViewModel(
                 password == confirmPassword
 
     fun register(email: String, password: String, username: String) {
-        if (!isInputValid) return
+        if (!isInputValid || _uiState.value.isLoading) return
         viewModelScope.launch {
-            _isLoading.value = true
+            _uiState.update { it.copy(isLoading = true) }
             try {
                 val response = authUseCase.register(RegisterRequest(email, password, username))
                 val tokens = response.data
@@ -52,15 +53,15 @@ class RegisterViewModel(
                         tokens.accessToken,
                         tokens.refreshToken
                     )
-                    _registerState.emit(RegisterState.OnRegister)
+                    _registerEffect.send(RegisterUiEffect.OnSuccessRegistration)
                 } else {
-                    _registerState.emit(RegisterState.ShowError(Exception(response.message)))
+                    _registerEffect.send(RegisterUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _registerState.emit(RegisterState.ShowError(Exception(errorMessage)))
+                _registerEffect.send(RegisterUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
-                _isLoading.value = false
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
