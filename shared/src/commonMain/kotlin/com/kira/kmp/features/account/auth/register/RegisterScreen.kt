@@ -45,7 +45,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,9 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.navigation.LoginRoute
@@ -79,51 +76,29 @@ fun RegisterScreen(
     onShowSnackbar: (String) -> Unit,
     viewModel: RegisterViewModel = koinViewModel(),
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(key1 = Unit) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.registerState.collect { state ->
-                when (state) {
-                    is RegisterState.OnRegister -> {
-                        onRegisterSuccess()
-                    }
-
-                    is RegisterState.ShowError -> {
-                        onShowSnackbar(state.error.message ?: "Registration failed")
-                    }
-                }
-            }
-        }
-    }
-    val isLoading by viewModel.isLoading.collectAsState()
-    PopulateRegisterScreen(
-        viewModel = viewModel,
-        navController = navController,
-        isLoading = isLoading,
-        onRegisterClick = { email, password, username ->
-            viewModel.register(
-                email,
-                password,
-                username
-            )
-        }
-    )
-}
-
-@Composable
-fun PopulateRegisterScreen(
-    viewModel: RegisterViewModel,
-    isLoading: Boolean,
-    navController: NavController,
-    onRegisterClick: (String, String, String) -> Unit
-) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     val passwordState = rememberTextFieldState()
     val confirmPasswordState = rememberTextFieldState()
-    var isPasswordVisible by remember { mutableStateOf(false) }
-    var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val isLoading = uiState.isLoading
+
+    LaunchedEffect(key1 = true) {
+        viewModel.registerEffect.collect { state ->
+            when (state) {
+                is RegisterUiEffect.OnSuccessRegistration -> {
+                    onRegisterSuccess()
+                }
+
+                is RegisterUiEffect.ShowSnackbar -> {
+                    onShowSnackbar(state.message)
+                }
+            }
+        }
+    }
 
     val passwordsMatch =
         viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
@@ -264,7 +239,7 @@ fun PopulateRegisterScreen(
 
                 BasicSecureTextField(
                     state = passwordState,
-                    textObfuscationMode = if (isPasswordVisible) {
+                    textObfuscationMode = if (passwordVisible) {
                         TextObfuscationMode.Visible
                     } else {
                         TextObfuscationMode.RevealLastTyped
@@ -299,12 +274,12 @@ fun PopulateRegisterScreen(
                             }
 
                             IconButton(
-                                onClick = { isPasswordVisible = !isPasswordVisible },
+                                onClick = { passwordVisible = !passwordVisible },
                                 modifier = Modifier.focusable(false)
                             ) {
                                 Icon(
-                                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
+                                    imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (passwordVisible) "Hide password" else "Show password",
                                     tint = Color.Gray
                                 )
                             }
@@ -316,7 +291,7 @@ fun PopulateRegisterScreen(
 
                 BasicSecureTextField(
                     state = confirmPasswordState,
-                    textObfuscationMode = if (isConfirmPasswordVisible) {
+                    textObfuscationMode = if (confirmPasswordVisible) {
                         TextObfuscationMode.Visible
                     } else {
                         TextObfuscationMode.RevealLastTyped
@@ -324,7 +299,7 @@ fun PopulateRegisterScreen(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     onKeyboardAction = {
                         keyboardController?.hide()
-                        onRegisterClick(
+                        viewModel.register(
                             email,
                             passwordState.text.toString(),
                             username
@@ -359,12 +334,12 @@ fun PopulateRegisterScreen(
                             }
 
                             IconButton(
-                                onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible },
+                                onClick = { confirmPasswordVisible = !confirmPasswordVisible },
                                 modifier = Modifier.focusable(false)
                             ) {
                                 Icon(
-                                    imageVector = if (isConfirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                    contentDescription = if (isConfirmPasswordVisible) "Hide password" else "Show password",
+                                    imageVector = if (confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password",
                                     tint = Color.Gray
                                 )
                             }
@@ -386,7 +361,7 @@ fun PopulateRegisterScreen(
                 Button(
                     onClick = {
                         keyboardController?.hide()
-                        onRegisterClick(email, passwordState.text.toString(), username)
+                        viewModel.register(email, passwordState.text.toString(), username)
                     },
                     enabled = !isLoading && viewModel.isInputValid,
                     modifier = Modifier
