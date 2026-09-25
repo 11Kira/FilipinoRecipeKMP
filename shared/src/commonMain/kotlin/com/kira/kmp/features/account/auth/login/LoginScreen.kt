@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +43,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,9 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.navigation.ForgotPasswordRoute
@@ -81,42 +77,26 @@ fun LoginScreen(
     onShowSnackbar: (String) -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(key1 = Unit) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.loginState.collect { state ->
-                when (state) {
-                    is LoginState.OnLogin -> {
-                        onLoginSuccess()
-                    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var passwordVisible by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
+    val passwordState = rememberTextFieldState()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val isLoading = uiState.isLoading
 
-                    is LoginState.ShowError -> {
-                        onShowSnackbar(state.error.message ?: "Login failed")
-                    }
+    LaunchedEffect(key1 = true) {
+        viewModel.loginEffect.collect { state ->
+            when (state) {
+                is LoginUiEffect.OnSuccessfulLogin -> {
+                    onLoginSuccess()
+                }
+
+                is LoginUiEffect.ShowSnackbar -> {
+                    onShowSnackbar(state.message)
                 }
             }
         }
     }
-    val isLoading by viewModel.isLoading.collectAsState()
-    PopulateLoginScreen(
-        viewModel = viewModel,
-        navController = navController,
-        isLoading = isLoading,
-        onLoginClick = { email, password -> viewModel.login(email, password) }
-    )
-}
-
-@Composable
-fun PopulateLoginScreen(
-    viewModel: LoginViewModel,
-    isLoading: Boolean,
-    navController: NavController,
-    onLoginClick: (String, String) -> Unit,
-) {
-    var email by remember { mutableStateOf("") }
-    val passwordState = rememberTextFieldState()
-    var isVisible by remember { mutableStateOf(false) }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(passwordState.text) {
         snapshotFlow { passwordState.text }.collect {
@@ -213,7 +193,7 @@ fun PopulateLoginScreen(
 
                 BasicSecureTextField(
                     state = passwordState,
-                    textObfuscationMode = if (isVisible) {
+                    textObfuscationMode = if (passwordVisible) {
                         TextObfuscationMode.Visible
                     } else {
                         TextObfuscationMode.RevealLastTyped
@@ -221,7 +201,7 @@ fun PopulateLoginScreen(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     onKeyboardAction = {
                         keyboardController?.hide()
-                        onLoginClick(email, passwordState.text.toString())
+                        viewModel.login(email, passwordState.text.toString())
                     },
                     modifier = Modifier.height(50.dp),
                     decorator = { innerTextField ->
@@ -252,16 +232,12 @@ fun PopulateLoginScreen(
                                 innerTextField()
                             }
 
-                            IconButton(
-                                onClick = { isVisible = !isVisible },
-                                modifier = Modifier.focusable(false)
-                            ) {
-                                Icon(
-                                    imageVector = if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                    contentDescription = if (isVisible) "Hide password" else "Show password",
-                                    tint = Color.Gray,
-
-                                )
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                val icon =
+                                    if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                                val description =
+                                    if (passwordVisible) "Hide password" else "Show password"
+                                Icon(imageVector = icon, contentDescription = description)
                             }
                         }
                     }
@@ -284,7 +260,10 @@ fun PopulateLoginScreen(
                 Button(
                     onClick = {
                         keyboardController?.hide()
-                        onLoginClick(email, passwordState.text.toString())
+                        viewModel.login(
+                            email,
+                            passwordState.text.toString()
+                        )
                     },
                     enabled = !isLoading && viewModel.isInputValid,
                     modifier = Modifier
