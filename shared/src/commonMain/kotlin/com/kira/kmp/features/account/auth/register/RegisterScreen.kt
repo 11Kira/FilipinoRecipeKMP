@@ -84,6 +84,8 @@ fun RegisterScreen(
     val passwordState = rememberTextFieldState()
     val confirmPasswordState = rememberTextFieldState()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val passwordsMatch =
+        viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
     val isLoading = uiState.isLoading
 
     LaunchedEffect(key1 = true) {
@@ -99,9 +101,6 @@ fun RegisterScreen(
             }
         }
     }
-
-    val passwordsMatch =
-        viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
 
     LaunchedEffect(username, email) {
         viewModel.username = username
