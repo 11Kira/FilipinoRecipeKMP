@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
@@ -44,7 +45,7 @@ fun EmailStepContent(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(8.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -55,6 +56,7 @@ fun EmailStepContent(
         Text(
             text = "Enter your registered email address to get a 6-digit verification code.",
             fontSize = 14.sp,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         BasicTextField(

@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
@@ -60,7 +61,7 @@ fun NewPasswordStepContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(8.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -70,7 +71,8 @@ fun NewPasswordStepContent(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Choose a strong new password for your account.",
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         BasicSecureTextField(
