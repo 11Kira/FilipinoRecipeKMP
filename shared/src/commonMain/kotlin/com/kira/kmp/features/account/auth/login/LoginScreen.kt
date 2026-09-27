@@ -139,6 +139,7 @@ fun LoginScreen(
                     contentDescription = "Project drawable image",
                     modifier = Modifier
                         .size(350.dp)
+                        .padding(top = 50.dp)
                         .align(Alignment.TopCenter),
                     contentScale = ContentScale.Crop,
                 )

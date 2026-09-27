@@ -36,8 +36,8 @@ import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
 
 @Composable
 fun OtpStepContent(
-    email: String,
     isLoading: Boolean,
+    email: String,
     onBack: () -> Unit,
     viewModel: ForgotPasswordViewModel
 ) {
@@ -101,7 +101,7 @@ fun OtpStepContent(
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = { viewModel.verifyOtp() },
-            enabled = viewModel.otpCode.length == 6,
+            enabled = !isLoading && viewModel.otpCode.length == 6,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

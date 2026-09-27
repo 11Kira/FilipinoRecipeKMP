@@ -104,7 +104,7 @@ fun EmailStepContent(
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = { viewModel.requestOtp() },
-            enabled = viewModel.isEmailValid,
+            enabled = !isLoading && viewModel.isEmailValid,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
