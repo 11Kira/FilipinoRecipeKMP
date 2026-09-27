@@ -93,11 +93,8 @@ fun OtpStepContent(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Box(modifier = Modifier.weight(1f)) {
-                        if (otpCode.isEmpty()) {
-                            Text(
-                                text = "6-Digit Code",
-                                color = Color.Gray
-                            )
+                        if (viewModel.otpCode.isEmpty()) {
+                            Text(text = "6-Digit Code", color = Color.Gray)
                         }
                         innerTextField()
                     }
@@ -107,7 +104,7 @@ fun OtpStepContent(
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = { viewModel.verifyOtp() },
-            enabled = otpCode.length == 6,
+            enabled = viewModel.otpCode.length == 6,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
