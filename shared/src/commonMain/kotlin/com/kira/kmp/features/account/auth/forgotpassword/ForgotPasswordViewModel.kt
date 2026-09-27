@@ -42,14 +42,6 @@ class ForgotPasswordViewModel(
         otpCode = newValue
     }
 
-    fun updatePassword(newValue: String) {
-        password = newValue
-    }
-
-    fun updateConfirmPassword(newValue: String) {
-        confirmPassword = newValue
-    }
-
     val isEmailValid: Boolean get() = emailRegex.matches(email)
     val isOtpValid: Boolean get() = otpCode.length >= 6
     val isPasswordValid: Boolean get() = password.length >= 6 && password == confirmPassword

@@ -54,9 +54,6 @@ fun NewPasswordStepContent(
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val passwordsMatch =
-        viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
-
     LaunchedEffect(passwordState.text, confirmPasswordState.text) {
         viewModel.password = passwordState.text.toString()
         viewModel.confirmPassword = confirmPasswordState.text.toString()
