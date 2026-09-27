@@ -114,6 +114,7 @@ fun PopulateProfileScreen(
                     contentDescription = "Project drawable image",
                     modifier = Modifier
                         .size(350.dp)
+                        .padding(top = 50.dp)
                         .align(Alignment.TopCenter),
                     contentScale = ContentScale.Crop,
                 )
@@ -122,7 +123,7 @@ fun PopulateProfileScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp),
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 StaticBasicTextFieldWithIcon(
