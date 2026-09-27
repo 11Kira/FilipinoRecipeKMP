@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,15 +39,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NewPasswordStepContent(
-    onReset: (String) -> Unit,
-    viewModel: ForgotPasswordViewModel = koinViewModel(),
+    isLoading: Boolean,
+    onBack: () -> Unit,
+    viewModel: ForgotPasswordViewModel,
 ) {
     val passwordState = rememberTextFieldState()
     val confirmPasswordState = rememberTextFieldState()
@@ -54,16 +56,13 @@ fun NewPasswordStepContent(
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val passwordsMatch =
-        viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
-
     LaunchedEffect(passwordState.text, confirmPasswordState.text) {
         viewModel.password = passwordState.text.toString()
         viewModel.confirmPassword = confirmPasswordState.text.toString()
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(8.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -73,7 +72,8 @@ fun NewPasswordStepContent(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Choose a strong new password for your account.",
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         BasicSecureTextField(
@@ -136,7 +136,6 @@ fun NewPasswordStepContent(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             onKeyboardAction = {
                 keyboardController?.hide()
-                if (passwordsMatch) onReset(passwordState.text.toString())
             },
             modifier = Modifier.height(50.dp),
             decorator = { innerTextField ->
@@ -181,8 +180,8 @@ fun NewPasswordStepContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { if (passwordsMatch) onReset(passwordState.text.toString()) },
-            enabled = viewModel.isPasswordValid,
+            onClick = { viewModel.completeReset() },
+            enabled = !isLoading && viewModel.isPasswordValid,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -192,6 +191,9 @@ fun NewPasswordStepContent(
             )
         ) {
             Text("Update Password")
+        }
+        TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+            Text("Back to Login")
         }
     }
 }

@@ -126,7 +126,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -139,6 +139,7 @@ fun LoginScreen(
                     contentDescription = "Project drawable image",
                     modifier = Modifier
                         .size(350.dp)
+                        .padding(top = 50.dp)
                         .align(Alignment.TopCenter),
                     contentScale = ContentScale.Crop,
                 )
@@ -146,7 +147,7 @@ fun LoginScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp),
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 BasicTextField(

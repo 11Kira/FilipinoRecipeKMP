@@ -102,7 +102,7 @@ fun AppNavHost(
         composable<ForgotPasswordRoute> {
             ForgotPasswordScreen(
                 onShowSnackbar = { msg -> onShowSnackbar(msg, null, null) },
-                onNavigateBackToLogin = {
+                onBackToLogin = {
                     navController.navigateUp()
                 }
             )

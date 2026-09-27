@@ -24,29 +24,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kira.kmp.features.account.auth.forgotpassword.ForgotPasswordViewModel
 
 @Composable
 fun OtpStepContent(
+    isLoading: Boolean,
     email: String,
-    onVerify: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: ForgotPasswordViewModel
 ) {
-    var otpCode by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(8.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -57,16 +55,16 @@ fun OtpStepContent(
         Text(
             text = "We sent a verification code to $email. It expires in 5 minutes.",
             fontSize = 14.sp,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         BasicTextField(
-            value = otpCode,
-            onValueChange = { if (it.length <= 6) otpCode = it },
+            value = viewModel.otpCode,
+            onValueChange = { viewModel.updateOtp(it) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    onVerify(otpCode.trim())
                 }
             ),
             modifier = Modifier.height(50.dp),
@@ -92,11 +90,8 @@ fun OtpStepContent(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Box(modifier = Modifier.weight(1f)) {
-                        if (otpCode.isEmpty()) {
-                            Text(
-                                text = "6-Digit Code",
-                                color = Color.Gray
-                            )
+                        if (viewModel.otpCode.isEmpty()) {
+                            Text(text = "6-Digit Code", color = Color.Gray)
                         }
                         innerTextField()
                     }
@@ -105,8 +100,8 @@ fun OtpStepContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { onVerify(otpCode.trim()) },
-            enabled = otpCode.length == 6,
+            onClick = { viewModel.verifyOtp() },
+            enabled = !isLoading && viewModel.otpCode.length == 6,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
