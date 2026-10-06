@@ -44,7 +44,7 @@ class UserRepository(
                 pageSize = 10,
                 prefetchDistance = 2,
                 enablePlaceholders = false,
-                initialLoadSize = 20
+                initialLoadSize = 10
             )
         ) {
             FavoriteRecipePagingSource(
@@ -60,6 +60,4 @@ class UserRepository(
             recipeId
         )
     }
-
-    suspend fun getUserProfile() = withContext(Dispatchers.IO) { userRemoteSource.getUserProfile() }
 }

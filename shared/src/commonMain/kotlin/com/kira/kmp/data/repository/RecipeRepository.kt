@@ -35,7 +35,7 @@ class RecipeRepository(
                 pageSize = 10,
                 prefetchDistance = 2,
                 enablePlaceholders = false,
-                initialLoadSize = 20
+                initialLoadSize = 10
             ),
             remoteMediator = RecipeRemoteMediator(
                 query = query,
@@ -92,7 +92,7 @@ class RecipeRepository(
         recipeDao.updateFavoriteStatus(recipeId, isFavorited, isFavoriteSynced)
     }
 
-    suspend fun getRecipeEntity(recipeId: String): RecipeEntity? {
+    suspend fun getRecipeFromCache(recipeId: String): RecipeEntity? {
         return recipeDao.getRecipeById(recipeId)
     }
 }

@@ -27,5 +27,5 @@ class RecipeUseCase(
         recipeRepository.updateFavoriteStatus(recipeId, isFavorited, isFavoriteSynced)
     }
 
-    suspend fun getRecipeEntity(recipeId: String) = recipeRepository.getRecipeEntity(recipeId)
+    suspend fun getRecipeEntity(recipeId: String) = recipeRepository.getRecipeFromCache(recipeId)
 }
