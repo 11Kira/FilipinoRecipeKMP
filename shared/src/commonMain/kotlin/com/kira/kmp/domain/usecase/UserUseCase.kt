@@ -27,6 +27,4 @@ class UserUseCase(
     suspend fun toggleFavoriteRecipe(recipeId: String): ApiResponse<Unit> {
         return userRepository.toggleFavoriteRecipe(recipeId)
     }
-
-    suspend fun getUserProfile() = userRepository.getUserProfile()
 }

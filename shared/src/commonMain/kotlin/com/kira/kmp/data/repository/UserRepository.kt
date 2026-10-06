@@ -26,7 +26,6 @@ class UserRepository(
     suspend fun refreshUserProfile() = withContext(Dispatchers.IO) {
         val response = userRemoteSource.getUserProfile()
         if (response.status == ResponseStatus.SUCCESS && response.data != null) {
-            // Optional: clear any old tenant data first before saving new profile
             userDao.clearUserProfile()
             userDao.insertUserProfile(response.data.toEntity())
         }
@@ -45,7 +44,7 @@ class UserRepository(
                 pageSize = 10,
                 prefetchDistance = 2,
                 enablePlaceholders = false,
-                initialLoadSize = 10
+                initialLoadSize = 20
             )
         ) {
             FavoriteRecipePagingSource(

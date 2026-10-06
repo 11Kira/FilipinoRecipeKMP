@@ -35,7 +35,7 @@ class RecipeRepository(
                 pageSize = 10,
                 prefetchDistance = 2,
                 enablePlaceholders = false,
-                initialLoadSize = 10
+                initialLoadSize = 20
             ),
             remoteMediator = RecipeRemoteMediator(
                 query = query,
