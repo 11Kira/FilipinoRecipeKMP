@@ -36,6 +36,7 @@ class RecipeDetailsViewModel(
                     _recipeDetailsUiState.update {
                         it.copy(recipe = response.data)
                     }
+                    syncPendingFavoriteIfNeeded(recipeId)
                 } else {
                     _recipeDetailsEffect.send(RecipeDetailsUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
@@ -45,6 +46,25 @@ class RecipeDetailsViewModel(
             } finally {
                 _recipeDetailsUiState.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    private suspend fun syncPendingFavoriteIfNeeded(recipeId: String) {
+        try {
+            val entity = recipeUseCase.getRecipeEntity(recipeId)
+            if (entity != null && !entity.isFavoriteSynced) {
+                val response = userUseCase.toggleFavoriteRecipe(recipeId)
+                if (response.status == ResponseStatus.SUCCESS) {
+                    recipeUseCase.updateFavoriteStatus(
+                        recipeId,
+                        entity.isFavorited,
+                        isFavoriteSynced = true
+                    )
+                    println("📡 Pending favorite successfully synced with server for recipe: $recipeId")
+                }
+            }
+        } catch (e: Exception) {
+            println("📡 Network sync skipped/failed (offline), will retry later.")
         }
     }
 
@@ -59,10 +79,25 @@ class RecipeDetailsViewModel(
 
         viewModelScope.launch {
             try {
-                recipeUseCase.updateFavoriteStatus(recipeId, newFavoriteState)
+                recipeUseCase.updateFavoriteStatus(
+                    recipeId,
+                    newFavoriteState,
+                    isFavoriteSynced = false
+                )
+
                 val response = userUseCase.toggleFavoriteRecipe(recipeId)
-                if (response.status != ResponseStatus.SUCCESS) {
-                    recipeUseCase.updateFavoriteStatus(recipeId, wasFavorited)
+                if (response.status == ResponseStatus.SUCCESS) {
+                    recipeUseCase.updateFavoriteStatus(
+                        recipeId,
+                        newFavoriteState,
+                        isFavoriteSynced = true
+                    )
+                } else {
+                    recipeUseCase.updateFavoriteStatus(
+                        recipeId,
+                        wasFavorited,
+                        isFavoriteSynced = true
+                    )
                     rollbackFavorite(
                         currentRecipe,
                         wasFavorited,
@@ -70,7 +105,7 @@ class RecipeDetailsViewModel(
                     )
                 }
             } catch (e: Exception) {
-                println("📡 Network sync failed, favorite saved locally in Room.")
+                println("📡 Network sync failed, favorite saved locally in Room. Will sync when internet comes back.")
             }
         }
     }

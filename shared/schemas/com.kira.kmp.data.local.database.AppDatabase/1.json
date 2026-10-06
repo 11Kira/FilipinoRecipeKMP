@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "00f36921e93da86f8be158b5f43d10d2",
+    "identityHash": "8f84ffbb33d051a0c4c14f865a69d146",
     "entities": [
       {
         "tableName": "recipes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `image` TEXT NOT NULL, `estimatedMinutes` INTEGER NOT NULL, `difficulty` TEXT NOT NULL, `category` TEXT NOT NULL, `protein` TEXT NOT NULL, `mealTime` TEXT NOT NULL, `ingredients` TEXT NOT NULL, `steps` TEXT NOT NULL, `cookingTips` TEXT NOT NULL, `variations` TEXT NOT NULL, `servingSuggestions` TEXT NOT NULL, `isFavorited` INTEGER NOT NULL, `createdAt` TEXT, `updatedAt` TEXT, `published` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `image` TEXT NOT NULL, `estimatedMinutes` INTEGER NOT NULL, `difficulty` TEXT NOT NULL, `category` TEXT NOT NULL, `protein` TEXT NOT NULL, `mealTime` TEXT NOT NULL, `ingredients` TEXT NOT NULL, `steps` TEXT NOT NULL, `cookingTips` TEXT NOT NULL, `variations` TEXT NOT NULL, `servingSuggestions` TEXT NOT NULL, `isFavorited` INTEGER NOT NULL, `isFavoriteSynced` INTEGER NOT NULL, `createdAt` TEXT, `updatedAt` TEXT, `published` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -99,6 +99,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "isFavoriteSynced",
+            "columnName": "isFavoriteSynced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "TEXT"
@@ -161,7 +167,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '00f36921e93da86f8be158b5f43d10d2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f84ffbb33d051a0c4c14f865a69d146')"
     ]
   }
 }

@@ -19,7 +19,13 @@ class RecipeUseCase(
         return recipeRepository.getRecipeById(recipeId = recipeId)
     }
 
-    suspend fun updateFavoriteStatus(recipeId: String, isFavorited: Boolean) {
-        recipeRepository.updateFavoriteStatus(recipeId, isFavorited)
+    suspend fun updateFavoriteStatus(
+        recipeId: String,
+        isFavorited: Boolean,
+        isFavoriteSynced: Boolean = true
+    ) {
+        recipeRepository.updateFavoriteStatus(recipeId, isFavorited, isFavoriteSynced)
     }
+
+    suspend fun getRecipeEntity(recipeId: String) = recipeRepository.getRecipeEntity(recipeId)
 }

@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.kira.kmp.data.local.database.dao.RecipeDao
+import com.kira.kmp.data.local.database.entity.RecipeEntity
 import com.kira.kmp.data.local.database.entity.toDomain
 import com.kira.kmp.data.local.database.entity.toEntity
 import com.kira.kmp.data.remote.mediator.RecipeRemoteMediator
@@ -83,7 +84,15 @@ class RecipeRepository(
         }
     }
 
-    suspend fun updateFavoriteStatus(recipeId: String, isFavorited: Boolean) {
-        recipeDao.updateFavoriteStatus(recipeId, isFavorited)
+    suspend fun updateFavoriteStatus(
+        recipeId: String,
+        isFavorited: Boolean,
+        isFavoriteSynced: Boolean = true
+    ) {
+        recipeDao.updateFavoriteStatus(recipeId, isFavorited, isFavoriteSynced)
+    }
+
+    suspend fun getRecipeEntity(recipeId: String): RecipeEntity? {
+        return recipeDao.getRecipeById(recipeId)
     }
 }
