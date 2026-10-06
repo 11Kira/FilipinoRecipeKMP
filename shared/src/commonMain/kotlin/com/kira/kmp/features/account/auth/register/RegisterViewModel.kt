@@ -22,8 +22,8 @@ class RegisterViewModel(
     private val tokenManager: TokenManager,
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(RegisterUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _registerUiState = MutableStateFlow(RegisterUiState())
+    val registerUiState = _registerUiState.asStateFlow()
 
     private val _registerEffect = Channel<RegisterUiEffect>(Channel.BUFFERED)
     val registerEffect: Flow<RegisterUiEffect> = _registerEffect.receiveAsFlow()
@@ -42,9 +42,9 @@ class RegisterViewModel(
                 password == confirmPassword
 
     fun register(email: String, password: String, username: String) {
-        if (!isInputValid || _uiState.value.isLoading) return
+        if (!isInputValid || _registerUiState.value.isLoading) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _registerUiState.update { it.copy(isLoading = true) }
             try {
                 val response = authUseCase.register(RegisterRequest(email, password, username))
                 val tokens = response.data
@@ -53,7 +53,7 @@ class RegisterViewModel(
                         tokens.accessToken,
                         tokens.refreshToken
                     )
-                    _registerEffect.send(RegisterUiEffect.OnSuccessRegistration)
+                    _registerEffect.send(RegisterUiEffect.RegistrationSuccess)
                 } else {
                     _registerEffect.send(RegisterUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
@@ -61,7 +61,7 @@ class RegisterViewModel(
                 val errorMessage = networkUtils.parseNetworkError(e)
                 _registerEffect.send(RegisterUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _registerUiState.update { it.copy(isLoading = false) }
             }
         }
     }

@@ -23,8 +23,8 @@ class LoginViewModel(
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _loginUiState = MutableStateFlow(LoginUiState())
+    val loginUiState = _loginUiState.asStateFlow()
 
     private val _loginEffect = Channel<LoginUiEffect>(Channel.BUFFERED)
     val loginEffect: Flow<LoginUiEffect> = _loginEffect.receiveAsFlow()
@@ -48,16 +48,16 @@ class LoginViewModel(
         get() = emailRegex.matches(email) && password.length >= 6
 
     fun login(email: String, password: String) {
-        if (!isInputValid || _uiState.value.isLoading) return
+        if (!isInputValid || _loginUiState.value.isLoading) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _loginUiState.update { it.copy(isLoading = true) }
             try {
                 val response = authUseCase.login(LoginRequest(email, password))
                 val tokens = response.data
                 if (tokens != null) {
                     tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                    _loginEffect.send(LoginUiEffect.OnSuccessfulLogin)
+                    _loginEffect.send(LoginUiEffect.LoginSuccess)
                 } else {
                     _loginEffect.send(
                         LoginUiEffect.ShowSnackbar(
@@ -69,7 +69,7 @@ class LoginViewModel(
                 val errorMessage = networkUtils.parseNetworkError(e)
                 _loginEffect.send(LoginUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _loginUiState.update { it.copy(isLoading = false) }
             }
         }
     }

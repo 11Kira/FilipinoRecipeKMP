@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +49,7 @@ fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = koinViewModel()
 ) {
     val currentStep by viewModel.currentStep.collectAsStateWithLifecycle()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.forgotPasswordUiState.collectAsStateWithLifecycle()
     val isLoading = uiState.isLoading
 
     LaunchedEffect(Unit) {
@@ -92,7 +92,7 @@ fun ForgotPasswordScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         CircularIconButton(
-                            icon = Icons.Default.ArrowBack,
+                            icon = Icons.AutoMirrored.Filled.ArrowBack,
                             onClick = onBackToLogin
                         )
                     }
