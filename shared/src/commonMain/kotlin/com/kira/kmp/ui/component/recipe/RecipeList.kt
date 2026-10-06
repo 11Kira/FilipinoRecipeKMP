@@ -33,11 +33,10 @@ fun RecipeList(
                 top = 120.dp,
                 start = 16.dp,
                 end = 16.dp,
-                bottom = contentPadding.calculateBottomPadding() + 16.dp
+                bottom = contentPadding.calculateBottomPadding() + 75.dp
             ),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            // FIX: Only show shimmer if loading AND there is no existing data to show
             if (refreshState is LoadState.Loading && recipes.itemCount == 0) {
                 items(5) {
                     RecipeShimmerItem(shimmerBrush = shimmerBrush)

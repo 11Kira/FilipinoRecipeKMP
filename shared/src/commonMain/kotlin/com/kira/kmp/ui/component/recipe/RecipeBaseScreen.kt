@@ -49,7 +49,6 @@ fun RecipeBaseScreen(
     var lastScrolledQuery by rememberSaveable { mutableStateOf("") }
     val refreshState = recipes.loadState.refresh
 
-    // Auto-scroll to top when query changes
     LaunchedEffect(refreshState) {
         if (refreshState is LoadState.NotLoading && recipes.itemCount > 0) {
             if (query != lastScrolledQuery) {
@@ -87,7 +86,6 @@ fun RecipeBaseScreen(
             )
         }
 
-        // Status bar scrim
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,7 +97,6 @@ fun RecipeBaseScreen(
                 )
         )
 
-        // Top Header (Search + Optional Filter)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,7 +117,6 @@ fun RecipeBaseScreen(
                     .shadow(elevation = 4.dp, shape = RoundedCornerShape(24.dp)),
             )
 
-            // Inject the Filter button here if provided
             actionSlot?.invoke(this)
         }
     }
