@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlin.time.Duration.Companion.milliseconds
 
 class FavoriteRecipeListViewModel(
     private val userUseCase: UserUseCase,
@@ -26,7 +27,7 @@ class FavoriteRecipeListViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val favoritePagingFlow = _searchQuery
-        .debounce(500L)
+        .debounce(500L.milliseconds)
         .distinctUntilChanged()
         .flatMapLatest { query ->
             userUseCase.getAllFavoriteRecipes(query = query)
