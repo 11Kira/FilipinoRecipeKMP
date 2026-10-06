@@ -66,6 +66,7 @@ class RecipeDetailsViewModel(
                     rollbackFavorite(
                         currentRecipe,
                         wasFavorited,
+                        "Failed to sync favorite with server."
                     )
                 }
             } catch (e: Exception) {
@@ -76,7 +77,8 @@ class RecipeDetailsViewModel(
 
     private fun rollbackFavorite(
         originalRecipe: Recipe,
-        originalState: Boolean
+        originalState: Boolean,
+        errorMessage: String
     ) {
         _recipeDetailsUiState.update {
             it.copy(
@@ -86,7 +88,7 @@ class RecipeDetailsViewModel(
         }
         viewModelScope.launch {
             _recipeDetailsEffect.send(
-                RecipeDetailsUiEffect.ShowSnackbar(message = "Failed to sync favorite with server.")
+                RecipeDetailsUiEffect.ShowSnackbar(message = errorMessage)
             )
         }
     }

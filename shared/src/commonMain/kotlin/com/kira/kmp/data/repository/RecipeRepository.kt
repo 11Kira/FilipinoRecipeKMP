@@ -15,7 +15,6 @@ import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.model.response.ApiResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.JsonObject
 
 class RecipeRepository(
     private val recipeRemoteSource: RecipeRemoteSource,
@@ -86,17 +85,5 @@ class RecipeRepository(
 
     suspend fun updateFavoriteStatus(recipeId: String, isFavorited: Boolean) {
         recipeDao.updateFavoriteStatus(recipeId, isFavorited)
-    }
-
-    suspend fun saveRecipe(body: JsonObject): ApiResponse<Recipe> {
-        return recipeRemoteSource.saveRecipe(body)
-    }
-
-    suspend fun updateRecipeById(recipeId: String, body: JsonObject): ApiResponse<Recipe> {
-        return recipeRemoteSource.updateRecipeById(recipeId = recipeId, body = body)
-    }
-
-    suspend fun deleteRecipeById(recipeId: String) {
-        return recipeRemoteSource.deleteRecipeById(recipeId = recipeId)
     }
 }
