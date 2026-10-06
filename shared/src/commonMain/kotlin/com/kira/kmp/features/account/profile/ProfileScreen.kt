@@ -48,20 +48,22 @@ fun ProfileScreen(
     onLogoutNavigate: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.profileUiState.collectAsStateWithLifecycle()
+    val profileUiState by viewModel.profileUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = null) {
         viewModel.getUserProfile()
     }
 
-    LaunchedEffect(uiState.error) {
-        uiState.error?.let {
-            onShowSnackbar(it)
+    LaunchedEffect(key1 = true) {
+        viewModel.profileEffect.collect { effect ->
+            when (effect) {
+                is ProfileUiEffect.ShowSnackbar -> onShowSnackbar(effect.message)
+            }
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        uiState.profile?.let { profile ->
+        profileUiState.profile?.let { profile ->
             PopulateProfileScreen(
                 userProfile = profile,
                 onLogoutNavigate = onLogoutNavigate,
@@ -69,7 +71,7 @@ fun ProfileScreen(
             )
         }
 
-        if (uiState.isLoading && uiState.profile == null) {
+        if (profileUiState.isLoading && profileUiState.profile == null) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
