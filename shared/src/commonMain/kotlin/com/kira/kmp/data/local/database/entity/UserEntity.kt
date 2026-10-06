@@ -12,6 +12,5 @@ data class UserEntity(
     val role: String
 )
 
-// Extension mappers to keep domain/data layers decoupled
 fun UserEntity.toDomain() = User(id = id, username = username, email = email, role = role)
 fun User.toEntity() = UserEntity(id = id, username = username, email = email, role = role)
