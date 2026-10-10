@@ -23,6 +23,7 @@ data class RecipeEntity(
     val variations: List<String>,
     val servingSuggestions: List<String>,
     val isFavorited: Boolean,
+    val isFavoriteSynced: Boolean = true,
     val createdAt: String?,
     val updatedAt: String?,
     val published: Boolean
@@ -49,7 +50,7 @@ fun RecipeEntity.toDomain() = Recipe(
     published = published
 )
 
-fun Recipe.toEntity() = RecipeEntity(
+fun Recipe.toEntity(isFavoriteSynced: Boolean = true) = RecipeEntity(
     id = id,
     title = title,
     description = description,
@@ -65,6 +66,7 @@ fun Recipe.toEntity() = RecipeEntity(
     variations = variations,
     servingSuggestions = servingSuggestions,
     isFavorited = isFavorited,
+    isFavoriteSynced = isFavoriteSynced,
     createdAt = createdAt,
     updatedAt = updatedAt,
     published = published

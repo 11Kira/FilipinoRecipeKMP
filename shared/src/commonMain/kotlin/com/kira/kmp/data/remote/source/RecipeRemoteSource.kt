@@ -4,7 +4,6 @@ import com.kira.kmp.data.remote.service.RecipeService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.JsonObject
 
 class RecipeRemoteSource(
     private val recipeService: RecipeService
@@ -27,13 +26,4 @@ class RecipeRemoteSource(
 
     suspend fun getRecipeById(recipeId: String) =
         withContext(Dispatchers.IO) { recipeService.getRecipeById(recipeId) }
-
-    suspend fun deleteRecipeById(recipeId: String) =
-        withContext(Dispatchers.IO) { recipeService.deleteRecipeById(recipeId) }
-
-    suspend fun saveRecipe(body: JsonObject) =
-        withContext(Dispatchers.IO) { recipeService.saveRecipe(body) }
-
-    suspend fun updateRecipeById(recipeId: String, body: JsonObject) =
-        withContext(Dispatchers.IO) { recipeService.updateRecipe(recipeId, body) }
 }

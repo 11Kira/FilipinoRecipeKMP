@@ -13,7 +13,6 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "secure_tokens")
 
@@ -30,7 +29,6 @@ class AndroidEncryptedStorage(private val context: Context) : EncryptedStorage {
             .getPrimitive(Aead::class.java)
     }
 
-    @OptIn(ExperimentalEncodingApi::class)
     override suspend fun putString(key: String, value: String) {
         val encrypted = aead.encrypt(value.encodeToByteArray(), null)
         val base64 = Base64.encode(encrypted)
@@ -39,7 +37,6 @@ class AndroidEncryptedStorage(private val context: Context) : EncryptedStorage {
         }
     }
 
-    @OptIn(ExperimentalEncodingApi::class)
     override suspend fun getString(key: String): String? {
         val base64 =
             context.dataStore.data.map { it[stringPreferencesKey(key)] }.first() ?: return null

@@ -26,7 +26,6 @@ class UserRepository(
     suspend fun refreshUserProfile() = withContext(Dispatchers.IO) {
         val response = userRemoteSource.getUserProfile()
         if (response.status == ResponseStatus.SUCCESS && response.data != null) {
-            // Optional: clear any old tenant data first before saving new profile
             userDao.clearUserProfile()
             userDao.insertUserProfile(response.data.toEntity())
         }
@@ -61,6 +60,4 @@ class UserRepository(
             recipeId
         )
     }
-
-    suspend fun getUserProfile() = withContext(Dispatchers.IO) { userRemoteSource.getUserProfile() }
 }

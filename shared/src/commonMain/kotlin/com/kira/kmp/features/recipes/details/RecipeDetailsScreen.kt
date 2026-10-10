@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -71,9 +71,11 @@ fun RecipeDetailsScreen(
         viewModel.getRecipeById(id)
     }
 
-    LaunchedEffect(uiState.error) {
-        uiState.error?.let {
-            onShowSnackbar(it, null, null)
+    LaunchedEffect(key1 = true) {
+        viewModel.recipeDetailsEffect.collect { effect ->
+            when (effect) {
+                is RecipeDetailsUiEffect.ShowSnackbar -> onShowSnackbar(effect.message, null, null)
+            }
         }
     }
 
@@ -240,7 +242,7 @@ fun RecipeTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CircularIconButton(icon = Icons.Default.ArrowBack, onClick = onBackClick)
+            CircularIconButton(icon = Icons.AutoMirrored.Filled.ArrowBack, onClick = onBackClick)
 
             Text(
                 text = recipe.title,

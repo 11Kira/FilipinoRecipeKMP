@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.milliseconds
 
 class RecipeListViewModel(
     private val recipeUseCase: RecipeUseCase,
@@ -46,7 +47,7 @@ class RecipeListViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val recipePagingFlow = combine(
-        _searchQuery.debounce(500L),
+        _searchQuery.debounce(500L.milliseconds),
         _filterTrigger,
         _appliedProteins,
         _appliedDifficulties
@@ -93,44 +94,4 @@ class RecipeListViewModel(
         _selectedProteins.value = emptySet()
         _selectedDifficulties.value = emptySet()
     }
-
-    /*fun toggleFavorite(recipeId: String) {
-        val currentList = _recipeListUiState.value.recipes ?: emptyList()
-        val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
-        if (recipeIndex == -1) return
-
-        val originalRecipe = currentList[recipeIndex]
-        val wasFavorited = originalRecipe.isFavorited
-
-        _recipeListUiState.update { state ->
-            val updatedList = currentList.toMutableList().apply {
-                this[recipeIndex] = originalRecipe.copy(isFavorited = !wasFavorited)
-            }
-            state.copy(recipes = updatedList)
-        }
-
-        viewModelScope.launch {
-            try {
-                val response = userUseCase.toggleFavoriteRecipe(recipeId)
-                if (response.status != ResponseStatus.SUCCESS) {
-                    rollbackListFavorite(recipeId, wasFavorited)
-                }
-            } catch (e: Exception) {
-                rollbackListFavorite(recipeId, wasFavorited)
-            }
-        }
-    }
-
-    private fun rollbackListFavorite(recipeId: String, wasFavorited: Boolean) {
-        val currentList = _recipeListUiState.value.recipes ?: return
-        val recipeIndex = currentList.indexOfFirst { it.id == recipeId }
-        if (recipeIndex == -1) return
-
-        _recipeListUiState.update { state ->
-            val updatedList = currentList.toMutableList().apply {
-                this[recipeIndex] = this[recipeIndex].copy(isFavorited = wasFavorited)
-            }
-            state.copy(recipes = updatedList)
-        }
-    }*/
 }

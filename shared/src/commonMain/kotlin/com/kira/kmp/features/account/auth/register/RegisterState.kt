@@ -5,6 +5,6 @@ data class RegisterUiState(
 )
 
 sealed interface RegisterUiEffect {
-    data object OnSuccessRegistration : RegisterUiEffect
+    data object RegistrationSuccess : RegisterUiEffect
     data class ShowSnackbar(val message: String) : RegisterUiEffect
 }

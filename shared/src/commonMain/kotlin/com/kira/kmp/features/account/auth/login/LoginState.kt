@@ -5,6 +5,6 @@ data class LoginUiState(
 )
 
 sealed interface LoginUiEffect {
-    data object OnSuccessfulLogin : LoginUiEffect
+    data object LoginSuccess : LoginUiEffect
     data class ShowSnackbar(val message: String) : LoginUiEffect
 }

@@ -29,7 +29,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Visibility
@@ -77,7 +77,7 @@ fun LoginScreen(
     onShowSnackbar: (String) -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.loginUiState.collectAsStateWithLifecycle()
     var passwordVisible by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     val passwordState = rememberTextFieldState()
@@ -87,7 +87,7 @@ fun LoginScreen(
     LaunchedEffect(key1 = true) {
         viewModel.loginEffect.collect { state ->
             when (state) {
-                is LoginUiEffect.OnSuccessfulLogin -> {
+                is LoginUiEffect.LoginSuccess -> {
                     onLoginSuccess()
                 }
 
@@ -131,7 +131,7 @@ fun LoginScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     CircularIconButton(
-                        icon = Icons.Default.ArrowBack,
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
                         onClick = { navController.popBackStack() })
                 }
                 Image(

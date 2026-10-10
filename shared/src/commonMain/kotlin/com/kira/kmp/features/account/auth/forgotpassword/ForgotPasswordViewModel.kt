@@ -24,8 +24,8 @@ class ForgotPasswordViewModel(
     private val _currentStep = MutableStateFlow<ForgotPasswordStep>(ForgotPasswordStep.EnterEmail)
     val currentStep: StateFlow<ForgotPasswordStep> = _currentStep
 
-    private val _uiState = MutableStateFlow(ForgotPasswordUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _forgotPasswordUiState = MutableStateFlow(ForgotPasswordUiState())
+    val forgotPasswordUiState = _forgotPasswordUiState.asStateFlow()
 
     private val _forgotPasswordEffect = Channel<ForgotPasswordUiEffect>(Channel.BUFFERED)
     val forgotPasswordEffect = _forgotPasswordEffect.receiveAsFlow()
@@ -47,9 +47,9 @@ class ForgotPasswordViewModel(
     val isPasswordValid: Boolean get() = password.length >= 6 && password == confirmPassword
 
     fun requestOtp() {
-        if (!isEmailValid || _uiState.value.isLoading) return
+        if (!isEmailValid || _forgotPasswordUiState.value.isLoading) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _forgotPasswordUiState.update { it.copy(isLoading = true) }
             try {
                 val response = authUseCase.initiateForgotPassword(email)
                 if (response.status == ResponseStatus.SUCCESS) {
@@ -61,15 +61,15 @@ class ForgotPasswordViewModel(
                 val errorMessage = networkUtils.parseNetworkError(e)
                 _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _forgotPasswordUiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun verifyOtp() {
-        if (!isOtpValid || _uiState.value.isLoading) return
+        if (!isOtpValid || _forgotPasswordUiState.value.isLoading) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _forgotPasswordUiState.update { it.copy(isLoading = true) }
             try {
                 val response = authUseCase.verifyOtpCode(email, otpCode)
                 if (response.status == ResponseStatus.SUCCESS && response.data != null) {
@@ -82,17 +82,17 @@ class ForgotPasswordViewModel(
                 val errorMessage = networkUtils.parseNetworkError(e)
                 _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _forgotPasswordUiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun completeReset() {
-        if (!isPasswordValid || _uiState.value.isLoading) return
+        if (!isPasswordValid || _forgotPasswordUiState.value.isLoading) return
         val currentState = _currentStep.value
         if (currentState !is ForgotPasswordStep.CreateNewPassword) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _forgotPasswordUiState.update { it.copy(isLoading = true) }
             try {
                 val request = ResetPasswordRequest(
                     email = currentState.email,
@@ -109,7 +109,7 @@ class ForgotPasswordViewModel(
                 val errorMessage = networkUtils.parseNetworkError(e)
                 _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _forgotPasswordUiState.update { it.copy(isLoading = false) }
             }
         }
     }

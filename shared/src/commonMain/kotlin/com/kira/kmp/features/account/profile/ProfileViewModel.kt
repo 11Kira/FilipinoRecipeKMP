@@ -8,9 +8,11 @@ import com.kira.kmp.domain.usecase.UserUseCase
 import com.kira.kmp.model.enums.ResponseStatus
 import com.kira.kmp.model.request.LogoutRequest
 import com.kira.kmp.utils.NetworkUtils
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,8 +26,10 @@ class ProfileViewModel(
     private val _profileUiState = MutableStateFlow(ProfileUiState())
     val profileUiState = _profileUiState.asStateFlow()
 
+    private val _profileEffect = Channel<ProfileUiEffect>(Channel.BUFFERED)
+    val profileEffect = _profileEffect.receiveAsFlow()
+
     init {
-        // Automatically pipe database cache mutations directly into the UI state
         viewModelScope.launch {
             userUseCase.userProfileFlow.collect { cachedProfile ->
                 _profileUiState.update { it.copy(profile = cachedProfile) }
@@ -40,35 +44,44 @@ class ProfileViewModel(
             }
             try {
                 val response = userUseCase.refreshUserProfile()
-                _profileUiState.update { it.copy(isLoading = false) }
 
                 if (response.status != ResponseStatus.SUCCESS) {
-                    _profileUiState.update { it.copy(error = response.message) }
+                    _profileEffect.send(ProfileUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 _profileUiState.update { it.copy(isLoading = false) }
                 val cachedProfile = userUseCase.userProfileFlow.first()
                 if (cachedProfile == null) {
                     val errorMessage = networkUtils.parseNetworkError(e)
-                    _profileUiState.update { it.copy(error = errorMessage) }
+                    _profileEffect.send(ProfileUiEffect.ShowSnackbar(message = errorMessage))
                 } else {
-                    println("📡 Network sync failed, but profile cache exists. Suppressing error snackbar.")
+                    _profileUiState.update { it.copy(profile = cachedProfile) }
                 }
+            } finally {
+                _profileUiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun logout(onLogout: () -> Unit) {
         viewModelScope.launch {
+            _profileUiState.update { it.copy(isLoading = true) }
             try {
                 val refreshToken = tokenManager.getRefreshToken() ?: ""
                 authUseCase.logout(LogoutRequest(refreshToken))
+                clearSessionAndNavigate(onLogout)
+            } catch (e: Exception) {
+                clearSessionAndNavigate(onLogout)
             } finally {
-                userUseCase.clearLocalProfile()
-                tokenManager.clearTokens()
-                authUseCase.clearNetworkSession()
-                onLogout.invoke()
+                _profileUiState.update { it.copy(isLoading = false) }
             }
         }
+    }
+
+    private suspend fun clearSessionAndNavigate(onLogout: () -> Unit) {
+        userUseCase.clearLocalProfile()
+        tokenManager.clearTokens()
+        authUseCase.clearNetworkSession()
+        onLogout.invoke()
     }
 }

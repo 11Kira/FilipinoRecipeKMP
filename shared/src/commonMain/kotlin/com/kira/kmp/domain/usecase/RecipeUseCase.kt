@@ -5,7 +5,6 @@ import com.kira.kmp.data.repository.RecipeRepository
 import com.kira.kmp.model.Recipe
 import com.kira.kmp.model.response.ApiResponse
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.json.JsonObject
 
 class RecipeUseCase(
     private val recipeRepository: RecipeRepository
@@ -20,19 +19,13 @@ class RecipeUseCase(
         return recipeRepository.getRecipeById(recipeId = recipeId)
     }
 
-    suspend fun updateFavoriteStatus(recipeId: String, isFavorited: Boolean) {
-        recipeRepository.updateFavoriteStatus(recipeId, isFavorited)
+    suspend fun updateFavoriteStatus(
+        recipeId: String,
+        isFavorited: Boolean,
+        isFavoriteSynced: Boolean = true
+    ) {
+        recipeRepository.updateFavoriteStatus(recipeId, isFavorited, isFavoriteSynced)
     }
 
-    suspend fun saveRecipe(body: JsonObject): ApiResponse<Recipe> {
-        return recipeRepository.saveRecipe(body)
-    }
-
-    suspend fun updateRecipeById(recipeId: String, body: JsonObject): ApiResponse<Recipe> {
-        return recipeRepository.updateRecipeById(recipeId = recipeId, body = body)
-    }
-
-    suspend fun deleteRecipeById(recipeId: String) {
-        return recipeRepository.deleteRecipeById(recipeId = recipeId)
-    }
+    suspend fun getRecipeEntity(recipeId: String) = recipeRepository.getRecipeFromCache(recipeId)
 }

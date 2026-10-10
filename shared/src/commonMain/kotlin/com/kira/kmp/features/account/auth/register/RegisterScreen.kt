@@ -30,7 +30,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Person
@@ -76,7 +76,7 @@ fun RegisterScreen(
     onShowSnackbar: (String) -> Unit,
     viewModel: RegisterViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.registerUiState.collectAsStateWithLifecycle()
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
@@ -91,7 +91,7 @@ fun RegisterScreen(
     LaunchedEffect(key1 = true) {
         viewModel.registerEffect.collect { state ->
             when (state) {
-                is RegisterUiEffect.OnSuccessRegistration -> {
+                is RegisterUiEffect.RegistrationSuccess -> {
                     onRegisterSuccess()
                 }
 
@@ -139,7 +139,7 @@ fun RegisterScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     CircularIconButton(
-                        icon = Icons.Default.ArrowBack,
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
                         onClick = { navController.popBackStack() })
                 }
                 Image(
