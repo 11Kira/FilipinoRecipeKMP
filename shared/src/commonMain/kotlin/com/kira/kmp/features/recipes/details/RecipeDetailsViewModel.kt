@@ -23,8 +23,8 @@ class RecipeDetailsViewModel(
     private val _recipeDetailsUiState = MutableStateFlow(RecipeDetailsUiState())
     val recipeDetailsUiState = _recipeDetailsUiState.asStateFlow()
 
-    private val _recipeDetailsEffect = Channel<RecipeDetailsUiEffect>(Channel.BUFFERED)
-    val recipeDetailsEffect = _recipeDetailsEffect.receiveAsFlow()
+    private val _recipeDetailsUiEffect = Channel<RecipeDetailsUiEffect>(Channel.BUFFERED)
+    val recipeDetailsUiEffect = _recipeDetailsUiEffect.receiveAsFlow()
 
     fun getRecipeById(recipeId: String) {
         if (_recipeDetailsUiState.value.recipe?.id == recipeId) return
@@ -38,11 +38,11 @@ class RecipeDetailsViewModel(
                     }
                     syncPendingFavoriteIfNeeded(recipeId)
                 } else {
-                    _recipeDetailsEffect.send(RecipeDetailsUiEffect.ShowSnackbar(message = response.message.toString()))
+                    _recipeDetailsUiEffect.send(RecipeDetailsUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _recipeDetailsEffect.send(RecipeDetailsUiEffect.ShowSnackbar(message = errorMessage))
+                _recipeDetailsUiEffect.send(RecipeDetailsUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
                 _recipeDetailsUiState.update { it.copy(isLoading = false) }
             }
@@ -122,7 +122,7 @@ class RecipeDetailsViewModel(
 
         }
         viewModelScope.launch {
-            _recipeDetailsEffect.send(
+            _recipeDetailsUiEffect.send(
                 RecipeDetailsUiEffect.ShowSnackbar(message = errorMessage)
             )
         }

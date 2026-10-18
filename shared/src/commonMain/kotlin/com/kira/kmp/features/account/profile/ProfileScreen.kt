@@ -32,7 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.kira.kmp.model.User
 import com.kira.kmp.model.enums.Role
 import com.kira.kmp.ui.component.StaticBasicTextFieldWithIcon
@@ -54,8 +57,11 @@ fun ProfileScreen(
         viewModel.getUserProfile()
     }
 
-    LaunchedEffect(key1 = true) {
-        viewModel.profileEffect.collect { effect ->
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel.profileUiEffect, lifecycleOwner) {
+        viewModel.profileUiEffect
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { effect ->
             when (effect) {
                 is ProfileUiEffect.ShowSnackbar -> onShowSnackbar(effect.message)
             }

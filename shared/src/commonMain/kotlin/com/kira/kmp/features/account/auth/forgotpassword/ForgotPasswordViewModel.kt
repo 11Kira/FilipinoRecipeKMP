@@ -27,8 +27,8 @@ class ForgotPasswordViewModel(
     private val _forgotPasswordUiState = MutableStateFlow(ForgotPasswordUiState())
     val forgotPasswordUiState = _forgotPasswordUiState.asStateFlow()
 
-    private val _forgotPasswordEffect = Channel<ForgotPasswordUiEffect>(Channel.BUFFERED)
-    val forgotPasswordEffect = _forgotPasswordEffect.receiveAsFlow()
+    private val _forgotPasswordUiEffect = Channel<ForgotPasswordUiEffect>(Channel.BUFFERED)
+    val forgotPasswordUiEffect = _forgotPasswordUiEffect.receiveAsFlow()
 
     private val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     var email by mutableStateOf("")
@@ -55,11 +55,11 @@ class ForgotPasswordViewModel(
                 if (response.status == ResponseStatus.SUCCESS) {
                     _currentStep.value = ForgotPasswordStep.EnterOtp(email)
                 } else {
-                    _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = response.message.toString()))
+                    _forgotPasswordUiEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
+                _forgotPasswordUiEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
                 _forgotPasswordUiState.update { it.copy(isLoading = false) }
             }
@@ -76,11 +76,11 @@ class ForgotPasswordViewModel(
                     _currentStep.value =
                         ForgotPasswordStep.CreateNewPassword(email, response.data.resetToken)
                 } else {
-                    _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = response.message.toString()))
+                    _forgotPasswordUiEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
+                _forgotPasswordUiEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
                 _forgotPasswordUiState.update { it.copy(isLoading = false) }
             }
@@ -103,11 +103,11 @@ class ForgotPasswordViewModel(
                 if (response.status == ResponseStatus.SUCCESS) {
                     _currentStep.value = ForgotPasswordStep.Success
                 } else {
-                    _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = response.message.toString()))
+                    _forgotPasswordUiEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _forgotPasswordEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
+                _forgotPasswordUiEffect.send(ForgotPasswordUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
                 _forgotPasswordUiState.update { it.copy(isLoading = false) }
             }

@@ -58,7 +58,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.navigation.LoginRoute
@@ -76,7 +79,7 @@ fun RegisterScreen(
     onShowSnackbar: (String) -> Unit,
     viewModel: RegisterViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.registerUiState.collectAsStateWithLifecycle()
+    val registerUiState by viewModel.registerUiState.collectAsStateWithLifecycle()
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
@@ -86,17 +89,20 @@ fun RegisterScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordsMatch =
         viewModel.password == viewModel.confirmPassword || viewModel.confirmPassword.isEmpty()
-    val isLoading = uiState.isLoading
+    val isLoading = registerUiState.isLoading
 
-    LaunchedEffect(key1 = true) {
-        viewModel.registerEffect.collect { state ->
-            when (state) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel.registerUiEffect, lifecycleOwner) {
+        viewModel.registerUiEffect
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { effect ->
+                when (effect) {
                 is RegisterUiEffect.RegistrationSuccess -> {
                     onRegisterSuccess()
                 }
 
                 is RegisterUiEffect.ShowSnackbar -> {
-                    onShowSnackbar(state.message)
+                    onShowSnackbar(effect.message)
                 }
             }
         }

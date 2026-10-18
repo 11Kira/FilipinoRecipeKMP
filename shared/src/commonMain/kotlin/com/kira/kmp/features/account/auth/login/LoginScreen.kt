@@ -58,7 +58,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.kira.kmp.ui.component.CircularIconButton
 import com.kira.kmp.ui.navigation.ForgotPasswordRoute
@@ -77,22 +80,25 @@ fun LoginScreen(
     onShowSnackbar: (String) -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.loginUiState.collectAsStateWithLifecycle()
+    val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
     var passwordVisible by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     val passwordState = rememberTextFieldState()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isLoading = uiState.isLoading
+    val isLoading = loginUiState.isLoading
 
-    LaunchedEffect(key1 = true) {
-        viewModel.loginEffect.collect { state ->
-            when (state) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel.loginUiEffect, lifecycleOwner) {
+        viewModel.loginUiEffect
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { effect ->
+                when (effect) {
                 is LoginUiEffect.LoginSuccess -> {
                     onLoginSuccess()
                 }
 
                 is LoginUiEffect.ShowSnackbar -> {
-                    onShowSnackbar(state.message)
+                    onShowSnackbar(effect.message)
                 }
             }
         }

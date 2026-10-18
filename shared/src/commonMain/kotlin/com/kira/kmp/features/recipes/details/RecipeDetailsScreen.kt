@@ -41,7 +41,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImage
 import com.kira.kmp.features.main.AppStartState
 import com.kira.kmp.features.main.MainViewModel
@@ -71,8 +74,11 @@ fun RecipeDetailsScreen(
         viewModel.getRecipeById(id)
     }
 
-    LaunchedEffect(key1 = true) {
-        viewModel.recipeDetailsEffect.collect { effect ->
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel.recipeDetailsUiEffect, lifecycleOwner) {
+        viewModel.recipeDetailsUiEffect
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { effect ->
             when (effect) {
                 is RecipeDetailsUiEffect.ShowSnackbar -> onShowSnackbar(effect.message, null, null)
             }

@@ -26,8 +26,8 @@ class ProfileViewModel(
     private val _profileUiState = MutableStateFlow(ProfileUiState())
     val profileUiState = _profileUiState.asStateFlow()
 
-    private val _profileEffect = Channel<ProfileUiEffect>(Channel.BUFFERED)
-    val profileEffect = _profileEffect.receiveAsFlow()
+    private val _profileUiEffect = Channel<ProfileUiEffect>(Channel.BUFFERED)
+    val profileUiEffect = _profileUiEffect.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -46,14 +46,13 @@ class ProfileViewModel(
                 val response = userUseCase.refreshUserProfile()
 
                 if (response.status != ResponseStatus.SUCCESS) {
-                    _profileEffect.send(ProfileUiEffect.ShowSnackbar(message = response.message.toString()))
+                    _profileUiEffect.send(ProfileUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
-                _profileUiState.update { it.copy(isLoading = false) }
                 val cachedProfile = userUseCase.userProfileFlow.first()
                 if (cachedProfile == null) {
                     val errorMessage = networkUtils.parseNetworkError(e)
-                    _profileEffect.send(ProfileUiEffect.ShowSnackbar(message = errorMessage))
+                    _profileUiEffect.send(ProfileUiEffect.ShowSnackbar(message = errorMessage))
                 } else {
                     _profileUiState.update { it.copy(profile = cachedProfile) }
                 }
