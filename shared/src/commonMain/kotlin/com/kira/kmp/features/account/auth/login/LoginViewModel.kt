@@ -26,8 +26,8 @@ class LoginViewModel(
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState = _loginUiState.asStateFlow()
 
-    private val _loginEffect = Channel<LoginUiEffect>(Channel.BUFFERED)
-    val loginEffect: Flow<LoginUiEffect> = _loginEffect.receiveAsFlow()
+    private val _loginUiEffect = Channel<LoginUiEffect>(Channel.BUFFERED)
+    val loginUiEffect: Flow<LoginUiEffect> = _loginUiEffect.receiveAsFlow()
 
     var email by mutableStateOf("")
         private set
@@ -57,9 +57,9 @@ class LoginViewModel(
                 val tokens = response.data
                 if (tokens != null) {
                     tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                    _loginEffect.send(LoginUiEffect.LoginSuccess)
+                    _loginUiEffect.send(LoginUiEffect.LoginSuccess)
                 } else {
-                    _loginEffect.send(
+                    _loginUiEffect.send(
                         LoginUiEffect.ShowSnackbar(
                             message = "Login failed. Please try again."
                         )
@@ -67,7 +67,7 @@ class LoginViewModel(
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _loginEffect.send(LoginUiEffect.ShowSnackbar(message = errorMessage))
+                _loginUiEffect.send(LoginUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
                 _loginUiState.update { it.copy(isLoading = false) }
             }

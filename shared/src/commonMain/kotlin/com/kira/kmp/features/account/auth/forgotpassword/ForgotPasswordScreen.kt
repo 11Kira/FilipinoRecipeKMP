@@ -30,7 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.kira.kmp.features.account.auth.forgotpassword.step.EmailStepContent
 import com.kira.kmp.features.account.auth.forgotpassword.step.NewPasswordStepContent
 import com.kira.kmp.features.account.auth.forgotpassword.step.OtpStepContent
@@ -49,15 +52,18 @@ fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = koinViewModel()
 ) {
     val currentStep by viewModel.currentStep.collectAsStateWithLifecycle()
-    val uiState by viewModel.forgotPasswordUiState.collectAsStateWithLifecycle()
-    val isLoading = uiState.isLoading
+    val forgotPasswordUiState by viewModel.forgotPasswordUiState.collectAsStateWithLifecycle()
+    val isLoading = forgotPasswordUiState.isLoading
 
-    LaunchedEffect(Unit) {
-        viewModel.forgotPasswordEffect.collect { state ->
-            when (state) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(viewModel.forgotPasswordUiEffect, lifecycleOwner) {
+        viewModel.forgotPasswordUiEffect
+            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { effect ->
+                when (effect) {
                 is ForgotPasswordUiEffect.ShowSnackbar -> {
                     onShowSnackbar(
-                        state.message
+                        effect.message
                     )
                 }
             }

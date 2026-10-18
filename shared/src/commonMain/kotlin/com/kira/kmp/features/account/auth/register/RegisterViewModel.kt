@@ -25,8 +25,8 @@ class RegisterViewModel(
     private val _registerUiState = MutableStateFlow(RegisterUiState())
     val registerUiState = _registerUiState.asStateFlow()
 
-    private val _registerEffect = Channel<RegisterUiEffect>(Channel.BUFFERED)
-    val registerEffect: Flow<RegisterUiEffect> = _registerEffect.receiveAsFlow()
+    private val _registerUiEffect = Channel<RegisterUiEffect>(Channel.BUFFERED)
+    val registerUiEffect: Flow<RegisterUiEffect> = _registerUiEffect.receiveAsFlow()
 
     var username by mutableStateOf("")
     var email by mutableStateOf("")
@@ -53,13 +53,13 @@ class RegisterViewModel(
                         tokens.accessToken,
                         tokens.refreshToken
                     )
-                    _registerEffect.send(RegisterUiEffect.RegistrationSuccess)
+                    _registerUiEffect.send(RegisterUiEffect.RegistrationSuccess)
                 } else {
-                    _registerEffect.send(RegisterUiEffect.ShowSnackbar(message = response.message.toString()))
+                    _registerUiEffect.send(RegisterUiEffect.ShowSnackbar(message = response.message.toString()))
                 }
             } catch (e: Exception) {
                 val errorMessage = networkUtils.parseNetworkError(e)
-                _registerEffect.send(RegisterUiEffect.ShowSnackbar(message = errorMessage))
+                _registerUiEffect.send(RegisterUiEffect.ShowSnackbar(message = errorMessage))
             } finally {
                 _registerUiState.update { it.copy(isLoading = false) }
             }
